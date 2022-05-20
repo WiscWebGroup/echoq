@@ -18,6 +18,7 @@ import java.util.List;
 public interface IUserService extends IService<User> {
     int selectUsername(String username);
     int insertUser(String username, String password);
+    int signin(String username, String password);
     int updateUserInfo(User user);
     int updateAvatar(File file);
     int respondQuestion(Questions question);
@@ -31,4 +32,10 @@ public interface IUserService extends IService<User> {
     List<Questions> selectQuestionsUnanswered(int userId);
     List<Questions> selectQuestionsAnswered(int userId);
     List<Questions> selectQuestionConditional(int userId, String condition);
+
+    List<Questions> selectQuestionsInv(int userId);
+    List<Questions> selectQuestionsUnansweredInv(int userId);
+    List<Questions> selectQuestionsAnsweredInv(int userId);
+
+    List<Questions> selectQuestionConditionalInvisible(int userId, String condition);
 }
