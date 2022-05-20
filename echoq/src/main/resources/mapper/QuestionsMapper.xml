@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.echoq.dao.QuestionsMapper">
+    <select id="selectUserId" resultType="int">
+        select userId from `questions` where questionId = #{questionId}
+    </select>
+
+    <insert id="insertQuestion" parameterType="org.echoq.entity.Questions">
+        insert into `questions`(anonyIp, question, userId, visibility, crtime, updtime)
+        values
+            (#{anonyip}, #{question}, #{userid}, FALSE, NOW(), NOW())
+    </insert>
+
+</mapper>
