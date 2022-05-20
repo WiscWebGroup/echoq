@@ -46,6 +46,18 @@ public class UserController {
             return new Result<>(-1, 400);
     }
 
+    @PostMapping("/signin")
+    public Result<Integer> signin(String username, String password, HttpSession session)
+    {
+        int c = service.signin(username, password);
+        int userId = service.selectUser(username);
+        if (c == 1) {
+            session.setAttribute("loginId", userId);
+            return new Result<>(1, 200);
+        }else
+            return new Result<>(-1, 400);
+    }
+
     @GetMapping("/getInfo")
     public Result<User> getInfo(HttpSession session)
     {

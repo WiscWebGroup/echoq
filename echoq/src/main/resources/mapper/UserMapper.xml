@@ -7,6 +7,9 @@
     <select id="selectUser" resultType="int">
         select userId from `user` where userName = #{username}
     </select>
+    <select id="signin" resultType="int">
+        select count(*) from `user` where userName = #{username} and password = #{password}
+    </select>
     <select id="selectUserInfo" resultType="org.echoq.entity.User">
         select userId, userName, name, password, avatarAddr, whatsup, color from `user` where userId = #{userId}
     </select>
@@ -16,11 +19,11 @@
             (#{username}, #{password})
     </insert>
     <update id="updateUserInfo">
-        update user set name = #{name}, password = #{password}, whatsup = #{whatsup}, color=#{color} where userId = {userid}
+        update `user` set name = #{name}, password = #{password}, whatsup = #{whatsup}, color=#{color} where userId = #{userid}
     </update>
 
     <update id="updateAvatar">
-        update user set avatarAddr = #{avatar}
+        update `user` set avatarAddr = #{avatar}
     </update>
 
     <update id="respondQuestion">
@@ -32,7 +35,7 @@
     </update>
 
     <delete id="deleteUser">
-        delete from user where userId = #{userId}
+        delete from `user` where userId = #{userId}
     </delete>
 
     <delete id="deleteQuestion">
@@ -44,11 +47,23 @@
     </select>
 
     <select id="selectQuestionsUnanswered" resultType="org.echoq.entity.Questions">
-        select questionId, anonyIp, question, response, visibility, updtime, crtime from `questions` where userId = #{userId} and (response = NULL or response = '') order by crtime
+        select questionId, anonyIp, question, response, visibility, updtime, crtime from `questions` where userId = #{userId} and (response is NULL or response = '') order by crtime
     </select>
 
     <select id="selectQuestionsAnswered" resultType="org.echoq.entity.Questions">
-        select questionId, anonyIp, question, response, visibility, updtime, crtime from `questions` where userId = #{userId} and response != NULL and response != '' order by updtime
+        select questionId, anonyIp, question, response, visibility, updtime, crtime from `questions` where userId = #{userId} and response is not NULL and response != '' order by updtime
+    </select>
+
+    <select id="selectQuestionsInv" resultType="org.echoq.entity.Questions">
+        select questionId, anonyIp, question, response, visibility, updtime, crtime from `questions` where userId = #{userId} and visibility = 1
+    </select>
+
+    <select id="selectQuestionsUnansweredInv" resultType="org.echoq.entity.Questions">
+        select questionId, anonyIp, question, response, visibility, updtime, crtime from `questions` where userId = #{userId} and (response is NULL or response = '') and visibility = 1 order by crtime
+    </select>
+
+    <select id="selectQuestionsAnsweredInv" resultType="org.echoq.entity.Questions">
+        select questionId, anonyIp, question, response, visibility, updtime, crtime from `questions` where userId = #{userId} and response is not NULL and response != '' and visibility = 1 order by updtime
     </select>
 
     <select id="searchQuestion" resultType="org.echoq.entity.Questions">

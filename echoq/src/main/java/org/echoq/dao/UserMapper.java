@@ -25,11 +25,17 @@ public interface UserMapper extends BaseMapper<User> {
     int updateVisibility(boolean visibility, int questionId);
     int deleteUser(int userId);
     int deleteQuestion(int questionId);
-    List<Questions> selectQuestions(int userId);
     List<Questions> searchQuestion(String searchContent);
     int selectUser(String username);
     User selectUserInfo(int userId);
 
+    List<Questions> selectQuestions(int userId);
     List<Questions> selectQuestionsUnanswered(int userId);
     List<Questions> selectQuestionsAnswered(int userId);
+
+    List<Questions> selectQuestionsInv(int userId);
+    List<Questions> selectQuestionsUnansweredInv(int userId);
+    List<Questions> selectQuestionsAnsweredInv(int userId);
+
+    int signin(String username, String password);
 }

@@ -1,5 +1,6 @@
 package org.echoq.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.AES;
 import org.echoq.entity.Questions;
 import org.echoq.entity.User;
 import org.echoq.dao.UserMapper;
@@ -42,7 +43,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
 
     @Override
+    public int signin(String username, String password) {
+
+        return mapper.signin(username, AESUtils.aesEncryptStr(password, AESUtils.getPkey()));
+    }
+
+    @Override
     public int updateUserInfo(User user) {
+        user.setPassword(AESUtils.aesEncryptStr(user.getPassword(), AESUtils.getPkey()));
         return mapper.updateUserInfo(user);
     }
 
@@ -106,6 +114,38 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
 
     @Override
+    public List<Questions> selectQuestionsInv(int userId) {
+        return mapper.selectQuestionsInv(userId);
+    }
+
+    @Override
+    public List<Questions> selectQuestionsUnansweredInv(int userId) {
+        return mapper.selectQuestionsUnansweredInv(userId);
+    }
+
+    @Override
+    public List<Questions> selectQuestionsAnsweredInv(int userId) {
+        return mapper.selectQuestionsAnsweredInv(userId);
+    }
+
+    @Override
+    public List<Questions> selectQuestionConditionalInvisible(int userId, String condition) {
+        if (condition == null || condition == "")
+        {
+            return selectQuestionsInv(userId);
+        }
+        if (condition.equals("answered"))
+        {
+            return selectQuestionsUnansweredInv(userId);
+        }
+        if (condition.equals("unanswered"))
+        {
+            return selectQuestionsAnsweredInv(userId);
+        }
+        return null;
+    }
+
+    @Override
     public List<Questions> searchQuestion(String searchContent) {
         return mapper.searchQuestion(searchContent);
     }
@@ -117,7 +157,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     @Override
     public User selectUserInfo(int userId) {
-        return mapper.selectUserInfo(userId);
+        User user = mapper.selectUserInfo(userId);
+        try {
+            user.setPassword(AESUtils.aesDecodeStr(user.getPassword(), AESUtils.getPkey()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return user;
     }
 
 
