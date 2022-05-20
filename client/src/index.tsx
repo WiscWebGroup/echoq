@@ -6,13 +6,13 @@ import reportWebVitals from "./reportWebVitals"
 import * as serviceWorker from "./serviceWorker"
 
 const container = document.getElementById("root")
-const root = ReactDOM.createRoot(container)
+const root = ReactDOM.createRoot(container as any)
 
 root.render(
   <React.StrictMode>
     <ColorModeScript />
     <App />
-  </React.StrictMode>,
+  </React.StrictMode>
 )
 
 // If you want your app to work offline and load faster, you can change
