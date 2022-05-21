@@ -97,6 +97,14 @@ public class UserController {
         return new Result<>(questions, 200);
     }
 
+    @GetMapping("/getQ/{username}")
+    public Result<List<Questions>> selectQuestionsInvisible(@PathVariable String username, String condition)
+    {
+        List<Questions> questions = service.selectQuestionConditionalInvisible(username, condition);
+        return new Result<>(questions, 200);
+    }
+
+
     @PostMapping("updateAvatar")
     public Result<Integer> updateAvatar(MultipartFile img, HttpSession session) throws IOException {
         int id = (int) session.getAttribute("loginId");
@@ -171,8 +179,9 @@ public class UserController {
     }
 
     @GetMapping("/searchQuestion")
-    public Result<List<Questions>> searchQuestion(String searchContent) {
-        return new Result<>(service.searchQuestion(searchContent), 200);
+    public Result<List<Questions>> searchQuestion(String searchContent, HttpSession session) {
+        int userId = (int) session.getAttribute("loginId");
+        return new Result<>(service.searchQuestion(userId, searchContent), 200);
     }
 }
 

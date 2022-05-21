@@ -98,6 +98,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     @Override
     public List<Questions> selectQuestionConditional(int userId, String condition) {
+
         if (condition == null || condition == "")
         {
             return selectQuestions(userId);
@@ -114,40 +115,43 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
 
     @Override
-    public List<Questions> selectQuestionsInv(int userId) {
+    public List<Questions> selectQuestionsInv(String username) {
+        int userId = mapper.selectUser(username);
         return mapper.selectQuestionsInv(userId);
     }
 
     @Override
-    public List<Questions> selectQuestionsUnansweredInv(int userId) {
+    public List<Questions> selectQuestionsUnansweredInv(String username) {
+        int userId = mapper.selectUser(username);
         return mapper.selectQuestionsUnansweredInv(userId);
     }
 
     @Override
-    public List<Questions> selectQuestionsAnsweredInv(int userId) {
+    public List<Questions> selectQuestionsAnsweredInv(String username) {
+        int userId = mapper.selectUser(username);
         return mapper.selectQuestionsAnsweredInv(userId);
     }
 
     @Override
-    public List<Questions> selectQuestionConditionalInvisible(int userId, String condition) {
+    public List<Questions> selectQuestionConditionalInvisible(String username, String condition) {
         if (condition == null || condition == "")
         {
-            return selectQuestionsInv(userId);
+            return selectQuestionsInv(username);
         }
         if (condition.equals("answered"))
         {
-            return selectQuestionsUnansweredInv(userId);
+            return selectQuestionsUnansweredInv(username);
         }
         if (condition.equals("unanswered"))
         {
-            return selectQuestionsAnsweredInv(userId);
+            return selectQuestionsAnsweredInv(username);
         }
         return null;
     }
 
     @Override
-    public List<Questions> searchQuestion(String searchContent) {
-        return mapper.searchQuestion(searchContent);
+    public List<Questions> searchQuestion(int userId, String searchContent) {
+        return mapper.searchQuestion(userId, searchContent);
     }
 
     @Override

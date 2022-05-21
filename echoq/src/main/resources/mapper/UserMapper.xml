@@ -67,6 +67,6 @@
     </select>
 
     <select id="searchQuestion" resultType="org.echoq.entity.Questions">
-        select questionId, anonyIp, question, response, visibility, updtime, crtime from `questions` where question like concat('%', #{searchContent}, '%') or response like concat('%', #{searchContent}, '%')
+        select questionId, anonyIp, question, response, visibility, updtime, crtime from `questions` where question like concat('%', #{searchContent}, '%') or response like concat('%', #{searchContent}, '%') and userId = #{userId}
     </select>
 </mapper>
