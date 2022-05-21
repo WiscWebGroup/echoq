@@ -25,7 +25,7 @@ public interface UserMapper extends BaseMapper<User> {
     int updateVisibility(boolean visibility, int questionId);
     int deleteUser(int userId);
     int deleteQuestion(int questionId);
-    List<Questions> searchQuestion(String searchContent);
+    List<Questions> searchQuestion(Integer userId, String searchContent);
     int selectUser(String username);
     User selectUserInfo(int userId);
 

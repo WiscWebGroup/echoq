@@ -26,16 +26,16 @@ public interface IUserService extends IService<User> {
     int deleteUser(int userId);
     int deleteQuestion(int questionId);
     List<Questions> selectQuestions(int userId);
-    List<Questions> searchQuestion(String searchContent);
+    List<Questions> searchQuestion(int userId, String searchContent);
     int selectUser(String username);
     User selectUserInfo(int userId);
     List<Questions> selectQuestionsUnanswered(int userId);
     List<Questions> selectQuestionsAnswered(int userId);
     List<Questions> selectQuestionConditional(int userId, String condition);
 
-    List<Questions> selectQuestionsInv(int userId);
-    List<Questions> selectQuestionsUnansweredInv(int userId);
-    List<Questions> selectQuestionsAnsweredInv(int userId);
+    List<Questions> selectQuestionsInv(String username);
+    List<Questions> selectQuestionsUnansweredInv(String username);
+    List<Questions> selectQuestionsAnsweredInv(String username);
 
-    List<Questions> selectQuestionConditionalInvisible(int userId, String condition);
+    List<Questions> selectQuestionConditionalInvisible(String username, String condition);
 }
