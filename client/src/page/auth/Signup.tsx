@@ -4,16 +4,14 @@ import {
   FormErrorMessage,
   FormHelperText,
   FormLabel,
-  Image,
   Input,
   Text,
   VStack
 } from "@chakra-ui/react"
 import { ChangeEvent, useEffect, useState } from "react"
-import { Link } from "react-router-dom"
 
-import LogoImage from "../../asset/png/logo.png"
 import { containsSpecialChars } from "../../common/utils/utils"
+import { NormalHeader } from "../../components/Nav"
 
 import "./signup.css"
 
@@ -167,7 +165,7 @@ const Signup = () => {
     }
   }
 
-  const handleCreate = () => {
+  const handleSignUp = () => {
     setLoading(true)
     if (canCreate) {
       // TODO: api
@@ -180,21 +178,7 @@ const Signup = () => {
 
   return (
     <div className="signup-container">
-      <div className="signup-nav-wrapper">
-        <div className="signup-nav-container">
-          <div className="signup-logo-container">
-            <Image borderRadius="full" boxSize="66px" src={LogoImage} alt="" />
-            <Text layerStyle="appnameText" textStyle="appnameText">
-              Echoq
-            </Text>
-          </div>
-          <Link to="/signin">
-            <Button colorScheme="teal" variant="outline">
-              Sign In
-            </Button>
-          </Link>
-        </div>
-      </div>
+      <NormalHeader variant="signup" />
       <div className="signup-form-container">
         <VStack spacing={8}>
           <Text fontSize="2xl">Sign Up</Text>
@@ -283,10 +267,10 @@ const Signup = () => {
           <Button
             colorScheme="teal"
             width="150px"
-            onClick={handleCreate}
+            onClick={handleSignUp}
             disabled={!canCreate}
           >
-            Create
+            Sign Up
           </Button>
         </VStack>
       </div>
