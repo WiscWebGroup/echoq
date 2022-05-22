@@ -18,6 +18,7 @@ import java.util.List;
 public interface IUserService extends IService<User> {
     int selectUsername(String username);
     int insertUser(String username, String password);
+    int insertUserWithName(User user);
     int signin(String username, String password);
     int updateUserInfo(User user);
     int updateAvatar(File file);

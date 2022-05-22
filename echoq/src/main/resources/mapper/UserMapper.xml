@@ -18,6 +18,11 @@
         values
             (#{username}, #{password})
     </insert>
+    <insert id="insertUserWithName" parameterType="org.echoq.entity.User">
+        insert into `user`(userName, name, password)
+        values
+            (#{username}, #{name}, #{password})
+    </insert>
     <update id="updateUserInfo">
         update `user` set name = #{name}, password = #{password}, whatsup = #{whatsup}, color=#{color} where userId = #{userid}
     </update>
