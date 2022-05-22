@@ -43,8 +43,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
 
     @Override
-    public int signin(String username, String password) {
+    public int insertUserWithName(User user) {
+        String password = user.getPassword();
+        String encrypted = AESUtils.aesEncryptStr(password, AESUtils.getPkey());
+        user.setPassword(encrypted);
+        return mapper.insertUserWithName(user);
+    }
 
+    @Override
+    public int signin(String username, String password) {
         return mapper.signin(username, AESUtils.aesEncryptStr(password, AESUtils.getPkey()));
     }
 

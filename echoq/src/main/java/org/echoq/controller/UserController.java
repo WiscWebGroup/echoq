@@ -5,15 +5,18 @@ import org.echoq.entity.Questions;
 import org.echoq.entity.User;
 import org.echoq.service.IUserService;
 import org.echoq.util.Result;
+import org.echoq.util.ResultToken;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * <p>
@@ -31,37 +34,43 @@ public class UserController {
     IUserService service;
 
     @PostMapping("/signup")
-    public Result<Integer> signup(String username, String password, HttpSession session)
+    public ResultToken<Integer> signup(@RequestBody User user, HttpSession session)
     {
+        String username = user.getUsername();
         int replicates = service.selectUsername(username);
         if (replicates > 0)
-            return new Result<>(-2, 400);
-        int response = service.insertUser(username, password);
-        if (response == 0) {
+            return new ResultToken<>(-2, 400, null);
+        int response = service.insertUserWithName(user);
+        if (response == 1) {
+            String uuid = UUID.randomUUID().toString();
             int id = service.selectUser(username);
-            session.setAttribute("loginId", id);
-            return new Result<>(1, 200);
+            session.setAttribute(uuid, id);
+            return new ResultToken<>(1, 200, uuid);
         }
         else
-            return new Result<>(-1, 400);
+            return new ResultToken<>(-1, 400, null);
     }
 
     @PostMapping("/signin")
-    public Result<Integer> signin(String username, String password, HttpSession session)
+    public ResultToken<Integer> signin(@RequestBody User user, HttpSession session)
     {
+        String username = user.getUsername();
+        String password = user.getPassword();
         int c = service.signin(username, password);
         int userId = service.selectUser(username);
         if (c == 1) {
-            session.setAttribute("loginId", userId);
-            return new Result<>(1, 200);
+            String uuid = UUID.randomUUID().toString();
+            session.setAttribute(uuid, userId);
+            return new ResultToken<>(1, 200, uuid);
         }else
-            return new Result<>(-1, 400);
+            return new ResultToken<>(-1, 400, null);
     }
 
     @GetMapping("/getInfo")
-    public Result<User> getInfo(HttpSession session)
+    public Result<User> getInfo(HttpServletRequest request, HttpSession session)
     {
-        int id = (int) session.getAttribute("loginId");
+        String key = request.getHeader("XXX-SToken");
+        int id = (int) session.getAttribute(key);
         User user = service.selectUserInfo(id);
         if (user.getUsername().equals("") || user.getUsername() == null)
         {
