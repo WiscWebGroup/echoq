@@ -1,5 +1,4 @@
 import { Button, Image, Text } from "@chakra-ui/react"
-import { ReactNode } from "react"
 import { Link } from "react-router-dom"
 
 import LogoImage from "../asset/png/logo.png"

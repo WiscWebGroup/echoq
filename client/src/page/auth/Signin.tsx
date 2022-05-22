@@ -5,10 +5,21 @@ import {
   FormHelperText,
   FormLabel,
   Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Text,
+  useDisclosure,
   VStack
 } from "@chakra-ui/react"
 import { ChangeEvent, useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
+
+import useApiResponse from "../../common/hooks/useApiResponse"
 import { containsSpecialChars } from "../../common/utils/utils"
 import { NormalHeader } from "../../components/Nav"
 
@@ -23,17 +34,23 @@ interface IUserCredentials {
   isPasswordError: boolean
 }
 
+const defaultCredentials: IUserCredentials = {
+  username: "",
+  isUsernameEmpty: true,
+  isUsernameError: false,
+  password: "",
+  isPasswordEmpty: true,
+  isPasswordError: false
+}
+
 const Signin = () => {
-  const [canCreate, setCanCreate] = useState(false)
+  let navigate = useNavigate()
+  const { makeRequest } = useApiResponse()
   const [loading, setLoading] = useState(false)
-  const [credentials, setCredentials] = useState<IUserCredentials>({
-    username: "",
-    isUsernameEmpty: true,
-    isUsernameError: false,
-    password: "",
-    isPasswordEmpty: true,
-    isPasswordError: false
-  })
+  const [canCreate, setCanCreate] = useState(false)
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const [credentials, setCredentials] =
+    useState<IUserCredentials>(defaultCredentials)
 
   useEffect(() => {
     setCanCreate(
@@ -87,15 +104,25 @@ const Signin = () => {
     }
   }
 
-  const handleSignIn = () => {
+  const handleSignIn = async () => {
     setLoading(true)
-    if (canCreate) {
-      // TODO: api
-      console.log("good")
+    const response = await makeRequest({
+      path: "/user/signin",
+      method: "POST",
+      data: {
+        username: credentials.username,
+        password: credentials.password
+      }
+    })
+    const data = await response.json()
+    if (data.t === 1) {
+      setLoading(false)
+      navigate("/account")
     } else {
-      console.log("not good")
+      setLoading(false)
+      onOpen()
+      setCredentials(defaultCredentials)
     }
-    setLoading(false)
   }
 
   return (
@@ -158,6 +185,23 @@ const Signin = () => {
           </Button>
         </VStack>
       </div>
+
+      <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader color="red">Error</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text>The username or password was incorrect.</Text>
+          </ModalBody>
+        </ModalContent>
+
+        <ModalFooter>
+          <Button colorScheme="teal" mr={3} onClick={onClose}>
+            OK
+          </Button>
+        </ModalFooter>
+      </Modal>
     </div>
   )
 }
