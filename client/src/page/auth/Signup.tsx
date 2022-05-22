@@ -20,6 +20,7 @@ import { ChangeEvent, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 import useApiResponse from "../../common/hooks/useApiResponse"
+import useLocalStorage, { TOKEN_KEY } from "../../common/hooks/useLocalStorage"
 import { containsSpecialChars } from "../../common/utils/utils"
 import { NormalHeader } from "../../components/Nav"
 
@@ -61,7 +62,8 @@ const Signup = () => {
   const [loading, setLoading] = useState(false)
   const [canCreate, setCanCreate] = useState(false)
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const [user, setUser] = useState<IUserRegistration>(defaultUser)
+  const { get, set, remove } = useLocalStorage(TOKEN_KEY)
+  const [user, setUser] = useState(defaultUser)
 
   useEffect(() => {
     setCanCreate(
@@ -193,6 +195,7 @@ const Signup = () => {
     })
     const data = response.json()
     if (data.t === 1) {
+      set(data.token)
       setLoading(false)
       navigate("/account")
     } else {
