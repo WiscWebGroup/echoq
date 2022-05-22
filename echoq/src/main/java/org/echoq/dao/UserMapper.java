@@ -19,6 +19,7 @@ import java.util.List;
 public interface UserMapper extends BaseMapper<User> {
     int selectUsername(String username);
     int insertUser(User user);
+    int insertUserWithName(User user);
     int updateUserInfo(User user);
     int updateAvatar(String s);
     int respondQuestion(Questions question);
