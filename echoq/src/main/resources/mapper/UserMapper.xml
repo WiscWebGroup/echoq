@@ -1,5 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.echoq.dao.UserMapper">
+    <select id="selectUsername" resultType="int">
+        select count(*) from `user` where userName = #{username}
+    </select>
+    <select id="selectUser" resultType="int">
+        select userId from `user` where userName = #{username}
+    </select>
+    <select id="signin" resultType="int">
+        select count(*) from `user` where userName = #{username} and password = #{password}
+    </select>
+    <select id="selectUserInfo" resultType="org.echoq.entity.User">
+        select userId, userName, name, password, avatarAddr, whatsup, color from `user` where userId = #{userId}
+    </select>
+    <insert id="insertUser" parameterType="org.echoq.entity.User">
+        insert into `user`(userName, password)
+        values
+            (#{username}, #{password})
+    </insert>
+    <update id="updateUserInfo">
+        update `user` set name = #{name}, password = #{password}, whatsup = #{whatsup}, color=#{color} where userId = #{userid}
+    </update>
 
+    <update id="updateAvatar">
+        update `user` set avatarAddr = #{avatar}
+    </update>
+
+    <update id="respondQuestion">
+        update questions set response = #{response}, visibility = #{visibility}, updtime = NOW() where questionId = #{questionId}
+    </update>
+
+    <update id="updateVisibility">
+        update questions set visiblity = #{visibility}, updtime = NOW() where questionId = #{questionId}
+    </update>
+
+    <delete id="deleteUser">
+        delete from `user` where userId = #{userId}
+    </delete>
+
+    <delete id="deleteQuestion">
+        delete from questions where questionId = #{questionId}
+    </delete>
+
+    <select id="selectQuestions" resultType="org.echoq.entity.Questions">
+        select questionId, anonyIp, question, response, visibility, updtime, crtime from `questions` where userId = #{userId}
+    </select>
+
+    <select id="selectQuestionsUnanswered" resultType="org.echoq.entity.Questions">
+        select questionId, anonyIp, question, response, visibility, updtime, crtime from `questions` where userId = #{userId} and (response is NULL or response = '') order by crtime
+    </select>
+
+    <select id="selectQuestionsAnswered" resultType="org.echoq.entity.Questions">
+        select questionId, anonyIp, question, response, visibility, updtime, crtime from `questions` where userId = #{userId} and response is not NULL and response != '' order by updtime
+    </select>
+
+    <select id="selectQuestionsInv" resultType="org.echoq.entity.Questions">
+        select questionId, anonyIp, question, response, visibility, updtime, crtime from `questions` where userId = #{userId} and visibility = 1
+    </select>
+
+    <select id="selectQuestionsUnansweredInv" resultType="org.echoq.entity.Questions">
+        select questionId, anonyIp, question, response, visibility, updtime, crtime from `questions` where userId = #{userId} and (response is NULL or response = '') and visibility = 1 order by crtime
+    </select>
+
+    <select id="selectQuestionsAnsweredInv" resultType="org.echoq.entity.Questions">
+        select questionId, anonyIp, question, response, visibility, updtime, crtime from `questions` where userId = #{userId} and response is not NULL and response != '' and visibility = 1 order by updtime
+    </select>
+
+    <select id="searchQuestion" resultType="org.echoq.entity.Questions">
+        select questionId, anonyIp, question, response, visibility, updtime, crtime from `questions` where question like concat('%', #{searchContent}, '%') or response like concat('%', #{searchContent}, '%') and userId = #{userId}
+    </select>
 </mapper>
