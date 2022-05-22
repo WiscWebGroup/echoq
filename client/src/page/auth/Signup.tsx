@@ -5,11 +5,21 @@ import {
   FormHelperText,
   FormLabel,
   Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Text,
+  useDisclosure,
   VStack
 } from "@chakra-ui/react"
 import { ChangeEvent, useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
 
+import useApiResponse from "../../common/hooks/useApiResponse"
 import { containsSpecialChars } from "../../common/utils/utils"
 import { NormalHeader } from "../../components/Nav"
 
@@ -30,23 +40,28 @@ interface IUserRegistration {
   isConfirmPasswordError: boolean
 }
 
+const defaultUser: IUserRegistration = {
+  name: "",
+  isNameEmpty: true,
+  isNameError: false,
+  username: "",
+  isUsernameEmpty: true,
+  isUsernameError: false,
+  password: "",
+  isPasswordEmpty: true,
+  isPasswordError: false,
+  confirmPassword: "",
+  isConfirmPasswordEmpty: true,
+  isConfirmPasswordError: false
+}
+
 const Signup = () => {
+  let navigate = useNavigate()
+  const { makeRequest } = useApiResponse()
   const [loading, setLoading] = useState(false)
   const [canCreate, setCanCreate] = useState(false)
-  const [user, setUser] = useState<IUserRegistration>({
-    name: "",
-    isNameEmpty: true,
-    isNameError: false,
-    username: "",
-    isUsernameEmpty: true,
-    isUsernameError: false,
-    password: "",
-    isPasswordEmpty: true,
-    isPasswordError: false,
-    confirmPassword: "",
-    isConfirmPasswordEmpty: true,
-    isConfirmPasswordError: false
-  })
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const [user, setUser] = useState<IUserRegistration>(defaultUser)
 
   useEffect(() => {
     setCanCreate(
@@ -165,15 +180,31 @@ const Signup = () => {
     }
   }
 
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     setLoading(true)
-    if (canCreate) {
-      // TODO: api
-      console.log("good")
+    const response = await makeRequest({
+      path: "/user/signup",
+      method: "POST",
+      data: {
+        name: user.name,
+        username: user.username,
+        password: user.password
+      }
+    })
+    const data = response.json()
+    if (data.t === 1) {
+      setLoading(false)
+      navigate("/account")
     } else {
-      console.log("not good")
+      setLoading(false)
+      onOpen()
+      setUser((prevState) => ({
+        ...prevState,
+        username: defaultUser.username,
+        isUsernameEmpty: true,
+        isUsernameError: false
+      }))
     }
-    setLoading(false)
   }
 
   return (
@@ -274,6 +305,23 @@ const Signup = () => {
           </Button>
         </VStack>
       </div>
+
+      <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader color="red">Error</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text>The username already exists. Please use another one.</Text>
+          </ModalBody>
+        </ModalContent>
+
+        <ModalFooter>
+          <Button colorScheme="teal" mr={3} onClick={onClose}>
+            OK
+          </Button>
+        </ModalFooter>
+      </Modal>
     </div>
   )
 }

@@ -1,4 +1,5 @@
 export function containsSpecialChars(str: string): boolean {
-  const specialChars = /[`!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~]/
+  // underscore '_' is allowed
+  const specialChars = /[`!@#$%^&*()+\-=[\]{};':"\\|,.<>/?~]/
   return specialChars.test(str)
 }
