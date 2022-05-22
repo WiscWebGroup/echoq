@@ -1,0 +1,36 @@
+.signup-container {
+  width: 100%;
+  height: 100%;
+}
+
+.signup-nav-wrapper {
+  width: 100%;
+  height: 98px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.signup-nav-container {
+  width: 360px;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.signup-logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.signup-form-container {
+  width: 100%;
+  height: calc(100% - 98px - 52px - 30px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
