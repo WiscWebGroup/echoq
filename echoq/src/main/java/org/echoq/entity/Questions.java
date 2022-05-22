@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
+import java.util.Date;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -17,28 +19,26 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class User implements Serializable {
+public class Questions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "userId", type = IdType.AUTO)
+    @TableId(value = "questionId", type = IdType.AUTO)
+    private Integer questionid;
+
+    @TableField("anonyIp")
+    private String anonyip;
+
+    private String question;
+
+    @TableField("userId")
     private Integer userid;
 
-    @TableField("userName")
-    private String username;
+    private String response;
 
-    private String name;
+    private boolean visibility;
 
-    private String email;
+    private Date crtime;
 
-    private String password;
-
-    @TableField("avatarAddr")
-    private String avataraddr;
-
-    private String whatsup;
-
-    private String color;
-
-
+    private Date updtime;
 }
