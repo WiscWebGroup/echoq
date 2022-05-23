@@ -22,7 +22,7 @@ import { useNavigate } from "react-router-dom"
 import useApiResponse from "../../common/hooks/useApiResponse"
 import useLocalStorage, { TOKEN_KEY } from "../../common/hooks/useLocalStorage"
 import { containsSpecialChars } from "../../common/utils/utils"
-import { NormalHeader } from "../../components/Nav"
+import { NormalHeader } from "../../components/Header"
 
 import "./signin.css"
 
@@ -50,7 +50,7 @@ const Signin = () => {
   const [loading, setLoading] = useState(false)
   const [canCreate, setCanCreate] = useState(false)
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const { get, set, remove } = useLocalStorage(TOKEN_KEY)
+  const { set } = useLocalStorage(TOKEN_KEY)
   const [credentials, setCredentials] = useState(defaultCredentials)
 
   useEffect(() => {

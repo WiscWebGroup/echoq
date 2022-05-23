@@ -22,7 +22,7 @@ import { useNavigate } from "react-router-dom"
 import useApiResponse from "../../common/hooks/useApiResponse"
 import useLocalStorage, { TOKEN_KEY } from "../../common/hooks/useLocalStorage"
 import { containsSpecialChars } from "../../common/utils/utils"
-import { NormalHeader } from "../../components/Nav"
+import { NormalHeader } from "../../components/Header"
 
 import "./signup.css"
 
@@ -62,7 +62,7 @@ const Signup = () => {
   const [loading, setLoading] = useState(false)
   const [canCreate, setCanCreate] = useState(false)
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const { get, set, remove } = useLocalStorage(TOKEN_KEY)
+  const { set } = useLocalStorage(TOKEN_KEY)
   const [user, setUser] = useState(defaultUser)
 
   useEffect(() => {
@@ -219,7 +219,6 @@ const Signup = () => {
           <FormControl
             isRequired
             id="display-name"
-            variant="floating"
             width="360px"
             isInvalid={user.isNameError || user.isNameEmpty}
           >
@@ -239,7 +238,6 @@ const Signup = () => {
           <FormControl
             isRequired
             id="username"
-            variant="floating"
             width="360px"
             isInvalid={user.isUsernameError || user.isUsernameEmpty}
           >
@@ -259,7 +257,6 @@ const Signup = () => {
           <FormControl
             isRequired
             id="password"
-            variant="floating"
             width="360px"
             isInvalid={user.isPasswordError || user.isPasswordEmpty}
           >
@@ -279,7 +276,6 @@ const Signup = () => {
           <FormControl
             isRequired
             id="confirm-password"
-            variant="floating"
             width="360px"
             isInvalid={
               user.isConfirmPasswordError || user.isConfirmPasswordEmpty
