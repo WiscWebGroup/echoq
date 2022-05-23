@@ -131,13 +131,11 @@ const Signin = () => {
     <div className="signin-container">
       <NormalHeader variant="signin" />
       <div className="signin-form-container">
-        <VStack spacing={8}>
+        <VStack spacing={8} width="calc(100% - 30px)">
           <Text fontSize="2xl">Sign In</Text>
           <FormControl
             isRequired
             id="username"
-            variant="floating"
-            width="360px"
             isInvalid={
               credentials.isUsernameError || credentials.isUsernameEmpty
             }
@@ -158,8 +156,6 @@ const Signin = () => {
           <FormControl
             isRequired
             id="password"
-            variant="floating"
-            width="360px"
             isInvalid={
               credentials.isPasswordError || credentials.isPasswordEmpty
             }
