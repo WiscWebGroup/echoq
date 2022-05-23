@@ -24,3 +24,19 @@ export const NormalHeader = ({ variant }: { variant: "signup" | "signin" }) => {
     </div>
   )
 }
+
+export const AuthedHeader = () => {
+  return (
+    <div className="nav-wrapper">
+      <div className="auth-nav-container">
+        <div className="auth-logo-container">
+          <Image borderRadius="full" boxSize="66px" src={LogoImage} alt="" />
+          <Text layerStyle="appnameText" textStyle="appnameText">
+            Echoq
+          </Text>
+        </div>
+        <Text fontSize="xl">My Account</Text>
+      </div>
+    </div>
+  )
+}
