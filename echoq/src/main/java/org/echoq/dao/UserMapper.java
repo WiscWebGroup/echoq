@@ -21,10 +21,11 @@ public interface UserMapper extends BaseMapper<User> {
     int insertUser(User user);
     int insertUserWithName(User user);
     int updateUserInfo(User user);
-    int updateAvatar(String s);
+    int updateAvatar(String s, int userId);
     int respondQuestion(Questions question);
     int updateVisibility(boolean visibility, int questionId);
     int deleteUser(int userId);
+    int confirmQuestionBelonging(int questionId);
     int deleteQuestion(int questionId);
     List<Questions> searchQuestion(Integer userId, String searchContent);
     int selectUser(String username);
