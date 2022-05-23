@@ -62,8 +62,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
 
     @Override
-    public int updateAvatar(File file) {
-        return mapper.updateAvatar(FileOperation.getBase64Image(file));
+    public int updateAvatar(File file, int userId) {
+        return mapper.updateAvatar(FileOperation.getBase64Image(file), userId);
     }
 
     @Override
@@ -79,6 +79,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     public int deleteUser(int userId) {
         return mapper.deleteUser(userId);
+    }
+
+    @Override
+    public int confirmQuestionBelonging(int questionId) {
+        return mapper.confirmQuestionBelonging(questionId);
     }
 
     @Override

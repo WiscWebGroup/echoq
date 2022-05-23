@@ -21,10 +21,11 @@ public interface IUserService extends IService<User> {
     int insertUserWithName(User user);
     int signin(String username, String password);
     int updateUserInfo(User user);
-    int updateAvatar(File file);
+    int updateAvatar(File file, int userId);
     int respondQuestion(Questions question);
     int updateVisibility(boolean visibility, int questionId);
     int deleteUser(int userId);
+    int confirmQuestionBelonging(int questionId);
     int deleteQuestion(int questionId);
     List<Questions> selectQuestions(int userId);
     List<Questions> searchQuestion(int userId, String searchContent);
