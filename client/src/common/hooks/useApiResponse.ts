@@ -1,12 +1,12 @@
 import { useNavigate } from "react-router-dom"
 
-import useApi, { TData, TMethod, TRespHandler } from "./useApi"
+import useApi, { TData, THeader, TMethod, TRespHandler } from "./useApi"
 
 export interface IRequest {
   path: string
   method: TMethod
   data: TData
-  headers?: HeadersInit
+  headers?: THeader
 }
 
 const useUnauthorizedHandler = () => {
@@ -33,7 +33,13 @@ export const useApiResponse = () => {
   )
 
   const makeRequest = async (request: IRequest) => {
-    const { path, method, data, headers } = request
+    const { path, method, data, headers: requestHeaders = {} } = request
+
+    const headers = {
+      ...requestHeaders,
+      "Content-Type": "application/json",
+      Accept: "application/json"
+    }
 
     const requestCall = async () => {
       switch (method) {
