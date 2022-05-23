@@ -48,7 +48,7 @@ const AlertProvider = ({ children }: { children?: ReactNode }) => {
       }, 2000)
       return () => clearTimeout(timer)
     }
-  }, [alert.show])
+  }, [alert.show, onClose, onOpen])
 
   return (
     <AlertContext.Provider value={alert}>
