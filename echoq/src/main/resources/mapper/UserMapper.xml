@@ -28,7 +28,7 @@
     </update>
 
     <update id="updateAvatar">
-        update `user` set avatarAddr = #{avatar}
+        update `user` set avatarAddr = #{avatar} where userId = #{userId}
     </update>
 
     <update id="respondQuestion">
@@ -38,6 +38,10 @@
     <update id="updateVisibility">
         update questions set visiblity = #{visibility}, updtime = NOW() where questionId = #{questionId}
     </update>
+
+    <select id="confirmQuestionBelonging" parameterType="int">
+        select userId from questions where questionId = #{questionId}
+    </select>
 
     <delete id="deleteUser">
         delete from `user` where userId = #{userId}

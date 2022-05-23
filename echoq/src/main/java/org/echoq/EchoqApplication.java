@@ -7,6 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication
 @ComponentScan("org.echoq.service")
 @ComponentScan("org.echoq.controller")
+@ComponentScan("org.echoq.config")
 public class EchoqApplication {
 
     public static void main(String[] args) {
