@@ -28,7 +28,7 @@ const Account = () => {
           </VStack>
         </UserProvider>
       </div>
-      <AuthedFooter active="account" />
+      <AuthedFooter active="account" shareLink="http://localhost" />
     </div>
   )
 }
