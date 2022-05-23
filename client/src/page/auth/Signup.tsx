@@ -214,12 +214,11 @@ const Signup = () => {
     <div className="signup-container">
       <NormalHeader variant="signup" />
       <div className="signup-form-container">
-        <VStack spacing={8}>
+        <VStack spacing={8} width="calc(100% - 30px)">
           <Text fontSize="2xl">Sign Up</Text>
           <FormControl
             isRequired
             id="display-name"
-            width="360px"
             isInvalid={user.isNameError || user.isNameEmpty}
           >
             <FormLabel htmlFor="display-name" fontSize="sm">
@@ -238,7 +237,6 @@ const Signup = () => {
           <FormControl
             isRequired
             id="username"
-            width="360px"
             isInvalid={user.isUsernameError || user.isUsernameEmpty}
           >
             <FormLabel htmlFor="username" fontSize="sm">
@@ -257,7 +255,6 @@ const Signup = () => {
           <FormControl
             isRequired
             id="password"
-            width="360px"
             isInvalid={user.isPasswordError || user.isPasswordEmpty}
           >
             <FormLabel htmlFor="password" fontSize="sm">
@@ -276,7 +273,6 @@ const Signup = () => {
           <FormControl
             isRequired
             id="confirm-password"
-            width="360px"
             isInvalid={
               user.isConfirmPasswordError || user.isConfirmPasswordEmpty
             }
