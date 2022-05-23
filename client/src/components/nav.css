@@ -7,7 +7,7 @@
 }
 
 .nav-container {
-  width: 360px;
+  width: calc(100% - 30px);
   height: 100%;
   display: flex;
   justify-content: space-between;
@@ -15,6 +15,24 @@
 }
 
 .logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.auth-nav-container {
+  width: calc(100% - 30px);
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.auth-logo-container {
+  position: absolute;
+  left: 0;
   display: flex;
   justify-content: center;
   align-items: center;
