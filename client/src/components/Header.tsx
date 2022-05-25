@@ -1,7 +1,9 @@
 import { Avatar, Button, Image, Text } from "@chakra-ui/react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 
 import LogoImage from "../asset/png/logo.png"
+import useApiResponse from "../common/hooks/useApiResponse"
+import useLocalStorage, { TOKEN_KEY } from "../common/hooks/useLocalStorage"
 
 import "./nav.css"
 
@@ -49,6 +51,20 @@ export const NormalHeader = ({ variant }: { variant: "signup" | "signin" }) => {
 }
 
 export const AuthedHeader = ({ page }: { page: string }) => {
+  const navigate = useNavigate()
+  const { makeRequest } = useApiResponse()
+  const { get, remove } = useLocalStorage(TOKEN_KEY)
+
+  const handleLogOut = async () => {
+    await makeRequest({
+      path: "/user/signout",
+      method: "POST",
+      data: null,
+      headers: { "XXX-SToken": get() }
+    })
+    remove()
+    navigate("/signin")
+  }
   return (
     <div className="nav-wrapper">
       <div className="auth-nav-container">
@@ -59,6 +75,16 @@ export const AuthedHeader = ({ page }: { page: string }) => {
           </Text>
         </div>
         <Text fontSize="xl">{page}</Text>
+        <div className="auth-logout-container">
+          <Button
+            size="sm"
+            colorScheme="red"
+            variant="outline"
+            onClick={handleLogOut}
+          >
+            Log Out
+          </Button>
+        </div>
       </div>
     </div>
   )
