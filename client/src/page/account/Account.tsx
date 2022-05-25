@@ -1,18 +1,18 @@
 import { Divider, VStack } from "@chakra-ui/react"
-import { AuthedHeader } from "../../components/Header"
 
+import { AuthedHeader } from "../../components/Header"
+import { AuthedFooter } from "../../components/Footer"
 import UpdateAccount from "./UpdateAccount"
 import UpdateProfile from "./UpdateProfile"
 import UpdateWhatsup from "./UpdateWhatsup"
 import UserProvider from "./UserContext"
 
 import "./account.css"
-import { AuthedFooter } from "../../components/Footer"
 
 const Account = () => {
   return (
     <div className="account-container">
-      <AuthedHeader />
+      <AuthedHeader page="My Account" />
       <div className="account-info-container">
         <UserProvider>
           <VStack
