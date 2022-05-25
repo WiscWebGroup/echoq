@@ -1,6 +1,7 @@
 .nav-wrapper {
   width: 100%;
   height: 98px;
+  min-height: 98px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -21,6 +22,7 @@
   flex-direction: column;
 }
 
+.share-nav-container,
 .auth-nav-container {
   width: calc(100% - 30px);
   height: 100%;
@@ -30,6 +32,7 @@
   position: relative;
 }
 
+.share-logo-container,
 .auth-logo-container {
   position: absolute;
   left: 0;

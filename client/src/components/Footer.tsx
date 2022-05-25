@@ -1,4 +1,5 @@
 import { IconButton, Image, Text, useClipboard } from "@chakra-ui/react"
+import { AddIcon } from "@chakra-ui/icons"
 import { Link } from "react-router-dom"
 
 import ShareIcon from "./icons/ShareIcon"
@@ -67,6 +68,22 @@ export const AuthedFooter = ({
           </Link>
         </div>
       </div>
+    </div>
+  )
+}
+
+export const ShareFooter = ({ onClick }: { onClick: () => void }) => {
+  return (
+    <div className="share-footer-wrapper">
+      <IconButton
+        width="100%"
+        height="100%"
+        colorScheme="teal"
+        aria-label="action button"
+        icon={<AddIcon boxSize="25px" />}
+        _focus={{ outline: "none" }}
+        onClick={onClick}
+      />
     </div>
   )
 }
