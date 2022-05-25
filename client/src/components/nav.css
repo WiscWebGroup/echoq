@@ -41,3 +41,8 @@
   align-items: center;
   flex-direction: column;
 }
+
+.auth-logout-container {
+  position: absolute;
+  right: 0;
+}
