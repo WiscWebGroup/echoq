@@ -1,0 +1,11 @@
+.owner-card-container {
+  width: calc(100% - 10px);
+}
+
+.owner-card-order-container {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
