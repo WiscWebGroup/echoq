@@ -16,75 +16,41 @@ import {
   useDisclosure,
   VStack
 } from "@chakra-ui/react"
-import { ChangeEvent, useEffect, useState } from "react"
+import { ChangeEvent, useEffect, useReducer, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 import useApiResponse from "../../common/hooks/useApiResponse"
 import useLocalStorage, { TOKEN_KEY } from "../../common/hooks/useLocalStorage"
-import { containsSpecialChars } from "../../common/utils/utils"
 import { NormalHeader } from "../../components/Header"
+import { initialCredentialState, signinReducer } from "./reducers/signinReducer"
 
 import "./signin.css"
-
-interface IUserCredentials {
-  username: string
-  isUsernameEmpty: boolean
-  isUsernameError: boolean
-  password: string
-  isPasswordEmpty: boolean
-  isPasswordError: boolean
-}
-
-const defaultCredentials: IUserCredentials = {
-  username: "",
-  isUsernameEmpty: true,
-  isUsernameError: false,
-  password: "",
-  isPasswordEmpty: true,
-  isPasswordError: false
-}
 
 const Signin = () => {
   let navigate = useNavigate()
   const { makeRequest } = useApiResponse()
-  const [loading, setLoading] = useState(false)
-  const [canCreate, setCanCreate] = useState(false)
+  const { get, set } = useLocalStorage(TOKEN_KEY)
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const { set } = useLocalStorage(TOKEN_KEY)
-  const [credentials, setCredentials] = useState(defaultCredentials)
+
+  const [loading, setLoading] = useState(false)
+  const [state, dispatch] = useReducer(signinReducer, initialCredentialState)
 
   useEffect(() => {
-    setCanCreate(
-      !credentials.isUsernameEmpty &&
-        !credentials.isPasswordEmpty &&
-        !credentials.isUsernameError &&
-        !credentials.isPasswordError
-    )
-  }, [credentials])
+    if (get() !== null) navigate("/account")
+  }, [get, navigate])
 
   const handleChangeUsername = (event: ChangeEvent<HTMLInputElement>) => {
-    setCredentials((prevState) => ({
-      ...prevState,
-      username: event.target.value,
-      isUsernameEmpty: event.target.value.length === 0,
-      isUsernameError: containsSpecialChars(event.target.value)
-    }))
+    dispatch({ type: "username", payload: event.target.value })
   }
 
   const handleChangePassword = (event: ChangeEvent<HTMLInputElement>) => {
-    setCredentials((prevState) => ({
-      ...prevState,
-      password: event.target.value,
-      isPasswordEmpty: event.target.value.length === 0,
-      isPasswordError:
-        event.target.value.length < 8 && event.target.value.length !== 0
-    }))
+    dispatch({ type: "password", payload: event.target.value })
   }
 
   const displayMessageForUsername = () => {
-    if (credentials.isUsernameEmpty) {
+    if (state.isUsernameEmpty) {
       return <FormHelperText fontSize="xs">Enter your username.</FormHelperText>
-    } else if (credentials.isUsernameError) {
+    } else if (state.isUsernameError) {
       return (
         <FormErrorMessage fontSize="xs">
           Username must not contain any special character!
@@ -94,9 +60,9 @@ const Signin = () => {
   }
 
   const displayMessageForPassword = () => {
-    if (credentials.isPasswordEmpty) {
+    if (state.isPasswordEmpty) {
       return <FormHelperText fontSize="xs">Enter your password.</FormHelperText>
-    } else if (credentials.isPasswordError) {
+    } else if (state.isPasswordError) {
       return (
         <FormErrorMessage fontSize="xs">
           Password must be at least 8 characters!
@@ -111,8 +77,8 @@ const Signin = () => {
       path: "/user/signin",
       method: "POST",
       data: {
-        username: credentials.username,
-        password: credentials.password
+        username: state.username,
+        password: state.password
       }
     })
     const data = await response.json()
@@ -123,7 +89,7 @@ const Signin = () => {
     } else {
       setLoading(false)
       onOpen()
-      setCredentials(defaultCredentials)
+      dispatch({ type: "reset", payload: "" })
     }
   }
 
@@ -136,9 +102,7 @@ const Signin = () => {
           <FormControl
             isRequired
             id="username"
-            isInvalid={
-              credentials.isUsernameError || credentials.isUsernameEmpty
-            }
+            isInvalid={state.isUsernameError || state.isUsernameEmpty}
           >
             <FormLabel htmlFor="username" fontSize="sm">
               Username
@@ -146,7 +110,7 @@ const Signin = () => {
             <Input
               id="username"
               type="text"
-              value={credentials.username}
+              value={state.username}
               onChange={handleChangeUsername}
               disabled={loading}
               placeholder="Username"
@@ -156,9 +120,7 @@ const Signin = () => {
           <FormControl
             isRequired
             id="password"
-            isInvalid={
-              credentials.isPasswordError || credentials.isPasswordEmpty
-            }
+            isInvalid={state.isPasswordError || state.isPasswordEmpty}
           >
             <FormLabel htmlFor="password" fontSize="sm">
               Password
@@ -166,7 +128,7 @@ const Signin = () => {
             <Input
               id="password"
               type="password"
-              value={credentials.password}
+              value={state.password}
               onChange={handleChangePassword}
               disabled={loading}
               placeholder="Password"
@@ -177,14 +139,19 @@ const Signin = () => {
             colorScheme="teal"
             width="150px"
             onClick={handleSignIn}
-            disabled={!canCreate}
+            disabled={!state.canSignin}
           >
             Sign In
           </Button>
         </VStack>
       </div>
 
-      <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
+      <Modal
+        blockScrollOnMount={false}
+        isOpen={isOpen}
+        onClose={onClose}
+        isCentered
+      >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader color="red">Error</ModalHeader>
