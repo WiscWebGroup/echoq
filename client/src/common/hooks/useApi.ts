@@ -1,6 +1,6 @@
 export type TData = { [key: string]: any } | null
 export type THeader = HeadersInit | { [key: string]: any }
-export type TRespHandler = (response: Response) => {}
+export type TRespHandler = (response: Response) => Response
 export type TMethod = "GET" | "POST" | "PUT" | "DELETE"
 
 const defaultHeaders = {
@@ -31,8 +31,11 @@ async function fetchData({
     body: data ? JSON.stringify(data) : null,
     headers: headers ? headers : defaultHeaders
   }).then((response) => {
-    if (response.status === 204) {
-      return {}
+    if (response.status === 401 && !!onUnauthorized) {
+      return onUnauthorized(response)
+    } else if (response.status === 404 && !!onError) {
+      console.debug("Endpoint " + path + " was not found")
+      return response
     } else if (response.status === 401 && !!onUnauthorized) {
       return onUnauthorized(response)
     } else if (response.status >= 500 && !!onError) {
@@ -47,7 +50,7 @@ async function fetchData({
 
 export function useApi(onUnauthorized: TRespHandler, onError: TRespHandler) {
   return {
-    get: (path: string, headers?: THeader): Promise<any> =>
+    get: (path: string, headers?: THeader): Promise<Response> =>
       fetchData({
         path: path,
         method: "GET",
@@ -56,7 +59,7 @@ export function useApi(onUnauthorized: TRespHandler, onError: TRespHandler) {
         onUnauthorized: onUnauthorized,
         onError: onError
       }),
-    post: (path: string, data: TData, headers?: THeader): Promise<any> =>
+    post: (path: string, data: TData, headers?: THeader): Promise<Response> =>
       fetchData({
         path: path,
         method: "POST",
@@ -65,7 +68,7 @@ export function useApi(onUnauthorized: TRespHandler, onError: TRespHandler) {
         onUnauthorized: onUnauthorized,
         onError: onError
       }),
-    put: (path: string, data: TData, headers?: THeader): Promise<any> =>
+    put: (path: string, data: TData, headers?: THeader): Promise<Response> =>
       fetchData({
         path: path,
         method: "PUT",
@@ -74,7 +77,7 @@ export function useApi(onUnauthorized: TRespHandler, onError: TRespHandler) {
         onUnauthorized: onUnauthorized,
         onError: onError
       }),
-    del: (path: string, headers?: THeader): Promise<any> =>
+    del: (path: string, headers?: THeader): Promise<Response> =>
       fetchData({
         path: path,
         method: "DELETE",
