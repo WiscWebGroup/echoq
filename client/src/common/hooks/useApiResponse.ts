@@ -13,6 +13,8 @@ const useUnauthorizedHandler = () => {
   let navigate = useNavigate()
 
   const handler: TRespHandler = (response: Response) => {
+    console.debug("Unauthenticated access")
+    console.debug("TODO: remove authentication here")
     navigate("/signin")
     return response
   }
@@ -21,6 +23,7 @@ const useUnauthorizedHandler = () => {
 
 const useErrorHandler = () => {
   const handler: TRespHandler = (response: Response) => {
+    console.debug("Server error")
     return response
   }
   return handler
