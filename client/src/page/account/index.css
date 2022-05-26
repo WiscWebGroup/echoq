@@ -21,3 +21,16 @@
   align-items: center;
   flex-direction: column;
 }
+
+.avatar-wrapper {
+  cursor: pointer;
+  position: relative;
+  border-radius: 100%;
+  border: 2px solid gray;
+}
+
+.avatar-icon-container {
+  position: absolute;
+  bottom: 10px;
+  right: -5px;
+}

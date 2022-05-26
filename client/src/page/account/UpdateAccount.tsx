@@ -16,84 +16,99 @@ import {
   useDisclosure,
   VStack
 } from "@chakra-ui/react"
-import { ChangeEvent, useEffect, useRef, useState } from "react"
+import { ChangeEvent, useReducer, useRef } from "react"
 
-import { useUser } from "./UserContext"
-import { containsSpecialChars } from "../../common/utils/utils"
+import { useUser, useUserUpdate } from "./UserContext"
+import useApiResponse from "../../common/hooks/useApiResponse"
+import { useAlertUpdate } from "../../components/alert/AlertProvider"
+import { accountReducer, initialAccountState } from "./reducers/accountReducer"
+import useLocalStorage, { TOKEN_KEY } from "../../common/hooks/useLocalStorage"
 
 import "./index.css"
 
-interface IAccount {
-  name: string
-  isNameEmpty: boolean
-  isNameError: boolean
-  password: string
-  isPasswordEmpty: boolean
-  isPasswordError: boolean
-}
-
-const initAccount: IAccount = {
-  name: "",
-  isNameEmpty: true,
-  isNameError: false,
-  password: "",
-  isPasswordEmpty: true,
-  isPasswordError: false
-}
-
 const UpdateAccount = () => {
   const user = useUser()
+  const setAlert = useAlertUpdate()
+  const fetchUser = useUserUpdate()
+  const { makeRequest } = useApiResponse()
+  const { get } = useLocalStorage(TOKEN_KEY)
   const cancelRef = useRef<HTMLButtonElement>(null)
   const { isOpen, onOpen, onClose } = useDisclosure()
 
-  const [alertText, setAlertText] = useState("")
-  const [account, setAccount] = useState(initAccount)
-  const [isSaveDisabled, setIsSaveDisabled] = useState(true)
-
-  useEffect(() => {
-    if (account.isNameEmpty) {
-      setIsSaveDisabled(account.isPasswordEmpty || account.isPasswordError)
-    } else if (account.isPasswordEmpty) {
-      setIsSaveDisabled(account.isNameEmpty || account.isNameError)
-    } else {
-      setIsSaveDisabled(account.isNameError || account.isPasswordError)
-    }
-  }, [account])
+  const [state, dispatch] = useReducer(accountReducer, initialAccountState)
 
   const handleChangeName = (event: ChangeEvent<HTMLInputElement>) => {
-    setAccount((prevState) => ({
-      ...prevState,
-      name: event.target.value,
-      isNameEmpty: event.target.value.length === 0,
-      isNameError: containsSpecialChars(event.target.value)
-    }))
+    dispatch({ type: "name", payload: event.target.value })
   }
 
   const handleChangePassword = (event: ChangeEvent<HTMLInputElement>) => {
-    setAccount((prevState) => ({
-      ...prevState,
-      password: event.target.value,
-      isPasswordEmpty: event.target.value.length === 0,
-      isPasswordError:
-        event.target.value.length < 8 && event.target.value.length !== 0
-    }))
+    dispatch({ type: "pass", payload: event.target.value })
   }
 
-  const handleSaveClick = () => {
-    if (account.isNameEmpty) {
-      setAlertText("password")
-    } else if (account.isPasswordEmpty) {
-      setAlertText("name")
-    } else {
-      setAlertText("name and password")
-    }
-    onOpen()
-  }
-
-  const handleSave = () => {
-    console.log("save")
-    // TODO: api call here to update what's up
+  const handleReset = () => {
+    dispatch({ type: "reset", payload: "" })
     onClose()
+  }
+
+  const updateName = async () => {
+    const response = await makeRequest({
+      path: "/user/updateInfoName",
+      method: "POST",
+      data: { name: state.name },
+      headers: {
+        "XXX-SToken": get(),
+        "Content-Type": "application/json"
+      }
+    })
+    if (response.status === 200) {
+      fetchUser()
+      handleReset()
+      setAlert({
+        status: "success",
+        text: "Successfully updated your display name.",
+        show: true
+      })
+    } else {
+      setAlert({
+        status: "error",
+        text: "Failed to update your display name. Please try again.",
+        show: true
+      })
+    }
+    onClose()
+  }
+
+  const updatePassword = async () => {
+    const response = await makeRequest({
+      path: "/user/updateInfoPassword",
+      method: "POST",
+      data: { password: state.pass },
+      headers: {
+        "XXX-SToken": get(),
+        "Content-Type": "application/json"
+      }
+    })
+    if (response.status === 200) {
+      fetchUser()
+      handleReset()
+      setAlert({
+        status: "success",
+        text: "Successfully updated your password.",
+        show: true
+      })
+    } else {
+      setAlert({
+        status: "error",
+        text: "Failed to update your password. Please try again.",
+        show: true
+      })
+    }
+    onClose()
+  }
+
+  const handleSave = async () => {
+    if (state.name && !state.isNameEmpty && !state.isNameError) updateName()
+    if (state.pass && !state.isPassEmpty && !state.isPassError) updatePassword()
   }
 
   return (
@@ -104,8 +119,8 @@ const UpdateAccount = () => {
           colorScheme="teal"
           variant="outline"
           size="sm"
-          isDisabled={isSaveDisabled}
-          onClick={handleSaveClick}
+          isDisabled={!state.canSave}
+          onClick={onOpen}
         >
           Save
         </Button>
@@ -121,12 +136,10 @@ const UpdateAccount = () => {
               <AlertDialogHeader fontSize="lg" fontWeight="bold">
                 Update Account
               </AlertDialogHeader>
-              <AlertDialogBody>
-                Are your sure you want to update your {alertText}?
-              </AlertDialogBody>
+              <AlertDialogBody>Are your sure?</AlertDialogBody>
               <AlertDialogFooter>
                 <HStack spacing={5}>
-                  <Button ref={cancelRef} onClick={onClose} size="sm">
+                  <Button ref={cancelRef} onClick={handleReset} size="sm">
                     Cancel
                   </Button>
                   <Button colorScheme="teal" onClick={handleSave} size="sm">
@@ -154,39 +167,39 @@ const UpdateAccount = () => {
               Username is permanent and unique.
             </FormHelperText>
           </FormControl>
-          <FormControl isInvalid={account.isNameError}>
+          <FormControl isInvalid={state.isNameError}>
             <FormLabel htmlFor="name" fontSize="sm">
               Name
             </FormLabel>
             <Input
               id="name"
               type="text"
-              value={account.name}
+              value={state.name}
               onChange={handleChangeName}
             />
             <FormHelperText fontSize="xs">
-              Type your new display name here (current: {user.name}){" "}
+              Type your new display name here (current: {user.name})
             </FormHelperText>
-            {account.isNameError && (
+            {state.isNameError && (
               <FormErrorMessage fontSize="xs">
                 Name must not contain any special character!
               </FormErrorMessage>
             )}
           </FormControl>
-          <FormControl isInvalid={account.isPasswordError}>
+          <FormControl isInvalid={state.isPassError}>
             <FormLabel htmlFor="password" fontSize="sm">
               Password
             </FormLabel>
             <Input
               id="password"
               type="password"
-              value={account.password}
+              value={state.pass}
               onChange={handleChangePassword}
             />
             <FormHelperText fontSize="xs">
               Type your new password here
             </FormHelperText>
-            {account.isPasswordError && (
+            {state.isPassError && (
               <FormErrorMessage fontSize="xs">
                 Password must be at least 8 characters!
               </FormErrorMessage>
