@@ -10,8 +10,6 @@ Demo请见：<a href="echoq.lol">Echoq</a>
 
 
 ## 作者
-图标设计：Harold澂冰
-前端设计：NataRich
-前端开发：NataRich
-数据库：Harold澂冰
-后端开发：Harold澂冰
+图标设计，数据库，后端开发：Harold澂冰
+
+前端设计，开发：NataRich
