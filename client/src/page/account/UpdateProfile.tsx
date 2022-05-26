@@ -10,25 +10,77 @@ import {
   Heading,
   HStack,
   Image,
-  useDisclosure
+  Input,
+  useDisclosure,
+  VStack
 } from "@chakra-ui/react"
-import { useState, useRef } from "react"
+import { useState, useRef, ChangeEvent } from "react"
 
-import { useUser } from "./UserContext"
+import CameraUnfilled from "../../asset/svg/camera-unfilled.svg"
+import { useUser, useUserUpdate } from "./UserContext"
+import useLocalStorage, { TOKEN_KEY } from "../../common/hooks/useLocalStorage"
+import { useAlertUpdate } from "../../components/alert/AlertProvider"
+import useMultipartApiResponse from "../../common/hooks/useMultipartApiResponse"
 
 import "./index.css"
 
 const UpdateProfile = () => {
   const user = useUser()
+  const formData = new FormData()
+  const setAlert = useAlertUpdate()
+  const fetchUser = useUserUpdate()
+  const { get } = useLocalStorage(TOKEN_KEY)
+  const fileRef = useRef<HTMLInputElement>(null)
   const cancelRef = useRef<HTMLButtonElement>(null)
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const { makeMultipartRequest } = useMultipartApiResponse()
+
   const [isSaveDisabled, setIsSaveDisabled] = useState(true)
 
-  // TODO: handle file upload
+  const handleUploadFile = (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      formData.append("img", event.target.files[0])
+      setIsSaveDisabled(false)
+      return
+    }
+    setIsSaveDisabled(true)
+  }
 
-  const handleSave = () => {
-    console.log("save")
-    // TODO: api call here to update profile picture
+  const handleSelectFile = () => {
+    fileRef.current?.click()
+  }
+
+  const handleResetFile = () => {
+    if (fileRef.current) fileRef.current.value = ""
+    setIsSaveDisabled(true)
+    onClose()
+  }
+
+  const handleSave = async () => {
+    const response = await makeMultipartRequest({
+      path: "/user/updateInfoAvatar",
+      method: "POST",
+      data: formData,
+      headers: {
+        "XXX-SToken": get(),
+        "Content-Type": "multipart/form-data"
+      }
+    })
+    if (response.status === 200) {
+      fetchUser()
+      handleResetFile()
+      setAlert({
+        status: "success",
+        text: "Successfully updated your profile picture.",
+        show: true
+      })
+    } else {
+      setAlert({
+        status: "error",
+        text: "Failed to update your profile picture. Please try again.",
+        show: true
+      })
+    }
     onClose()
   }
 
@@ -62,7 +114,7 @@ const UpdateProfile = () => {
               </AlertDialogBody>
               <AlertDialogFooter>
                 <HStack spacing={5}>
-                  <Button ref={cancelRef} onClick={onClose} size="sm">
+                  <Button ref={cancelRef} onClick={handleResetFile} size="sm">
                     Cancel
                   </Button>
                   <Button colorScheme="teal" onClick={handleSave} size="sm">
@@ -75,18 +127,41 @@ const UpdateProfile = () => {
         </AlertDialog>
       </div>
       <div className="section-content-container">
-        <div className="avatar-wrapper">
-          {user.avatar ? (
-            <Image
-              borderRadius="full"
-              boxSize="100px"
-              src={user.avatar}
-              alt=""
-            />
-          ) : (
-            <Avatar size="xl" bgColor="teal" name={user.name} />
-          )}
-        </div>
+        <VStack spacing={4}>
+          <div className="avatar-wrapper" onClick={handleSelectFile}>
+            {user.avatar ? (
+              <Image
+                borderRadius="full"
+                boxSize="100px"
+                src={user.avatar}
+                alt=""
+              />
+            ) : (
+              <Avatar
+                size="xl"
+                bgColor="teal"
+                color="#fff"
+                margin="2px"
+                name={user.name}
+              />
+            )}
+            <div className="avatar-icon-container">
+              <Image
+                borderRadius="full"
+                boxSize="30px"
+                src={CameraUnfilled}
+                alt=""
+              />
+            </div>
+          </div>
+          <Input
+            ref={fileRef}
+            type="file"
+            accept=""
+            onChange={handleUploadFile}
+            display="none"
+          />
+        </VStack>
       </div>
     </div>
   )

@@ -8,8 +8,18 @@ import UpdateWhatsup from "./UpdateWhatsup"
 import UserProvider from "./UserContext"
 
 import "./account.css"
+import useLocalStorage, { TOKEN_KEY } from "../../common/hooks/useLocalStorage"
+import { useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 
 const Account = () => {
+  const navigate = useNavigate()
+  const { get } = useLocalStorage(TOKEN_KEY)
+
+  useEffect(() => {
+    if (get() === null) navigate("/signin")
+  }, [get, navigate])
+
   return (
     <div className="account-container">
       <AuthedHeader page="My Account" />

@@ -15,16 +15,23 @@ import {
 } from "@chakra-ui/react"
 import { useEffect, useRef, useState } from "react"
 
-import { useUser } from "./UserContext"
+import { useUser, useUserUpdate } from "./UserContext"
+import useApiResponse from "../../common/hooks/useApiResponse"
+import { useAlertUpdate } from "../../components/alert/AlertProvider"
+import useLocalStorage, { TOKEN_KEY } from "../../common/hooks/useLocalStorage"
 
 import "./index.css"
 
 const UpdateWhatsup = () => {
   const user = useUser()
+  const setAlert = useAlertUpdate()
+  const fetchUser = useUserUpdate()
+  const { makeRequest } = useApiResponse()
+  const { get } = useLocalStorage(TOKEN_KEY)
   const cancelRef = useRef<HTMLButtonElement>(null)
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [isSaveDisabled, setIsSaveDisabled] = useState(true)
-  const [whatsup, setWhatsup] = useState<string | undefined>("")
+  const [whatsup, setWhatsup] = useState<string | null>("")
 
   useEffect(() => {
     setWhatsup(user.whatsup)
@@ -39,9 +46,31 @@ const UpdateWhatsup = () => {
     onClose()
   }
 
-  const handleSave = () => {
-    console.log("save")
-    // TODO: api call here to update what's up
+  const handleSave = async () => {
+    const response = await makeRequest({
+      path: "/user/updateInfoWhatsup",
+      method: "POST",
+      data: { whatsup },
+      headers: {
+        "XXX-SToken": get(),
+        "Content-Type": "application/json"
+      }
+    })
+    if (response.status === 200) {
+      setWhatsup("")
+      fetchUser()
+      setAlert({
+        status: "success",
+        text: "Successfully updated your what's up.",
+        show: true
+      })
+    } else {
+      setAlert({
+        status: "error",
+        text: "Failed to update your what's up. Please try again.",
+        show: true
+      })
+    }
     onClose()
   }
 
@@ -92,7 +121,7 @@ const UpdateWhatsup = () => {
           <Text>{user.whatsup}</Text>
           <Textarea
             resize="none"
-            value={whatsup}
+            value={whatsup || ""}
             onChange={(e) => setWhatsup(e.target.value)}
           />
           <Text fontSize="xs" color="#718096" textAlign="left">
