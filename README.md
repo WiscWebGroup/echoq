@@ -6,7 +6,7 @@ Echoq是一款二人开发的应用，初衷是保持简洁性的同时帮助朋
 
 ![image](https://user-images.githubusercontent.com/68500948/170563466-871bf4d4-ee3d-41f4-bbb2-356ac3ce716b.png)
 
-Demo请见：<a href="echoq.lol">Echoq</a>
+Demo请见：<a href="http://www.echoq.lol">Echoq</a>
 
 
 ## 作者
