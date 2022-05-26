@@ -1,17 +1,17 @@
 import { useCallback } from "react"
-
-import useApi, { TData, THeader, TMethod } from "./useApi"
 import { useUnauthorizedHandler, useErrorHandler } from "./apiHandlers"
+
+import { THeader, TMethod, useMultipartApi } from "./useMultipartApi"
 
 export interface IRequest {
   path: string
   method: TMethod
-  data: TData
+  data: FormData
   headers?: THeader
 }
 
-export const useApiResponse = () => {
-  const { get, post, put, del } = useApi(
+export const useMultipartApiResponse = () => {
+  const { postMultipart } = useMultipartApi(
     useUnauthorizedHandler(),
     useErrorHandler()
   )
@@ -26,22 +26,16 @@ export const useApiResponse = () => {
 
     const requestCall = async () => {
       switch (method) {
-        case "GET":
-          return await get(path, headers)
         case "POST":
-          return await post(path, data, headers)
-        case "PUT":
-          return await put(path, data, headers)
-        case "DELETE":
-          return await del(path, headers)
+          return await postMultipart(path, data, headers)
       }
     }
     return requestCall()
   }
 
-  const makeRequest = useCallback(makeRequestCallBack, [get, post, put, del])
+  const makeMultipartRequest = useCallback(makeRequestCallBack, [postMultipart])
 
-  return { makeRequest }
+  return { makeMultipartRequest }
 }
 
-export default useApiResponse
+export default useMultipartApiResponse

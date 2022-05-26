@@ -1,0 +1,7 @@
+.viewer-card-container {
+  width: calc(100% - 10px);
+}
+
+.viewer-card-order-container {
+  height: 100%;
+}
