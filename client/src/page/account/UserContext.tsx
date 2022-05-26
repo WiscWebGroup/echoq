@@ -42,11 +42,13 @@ const UserProvider = ({ children }: { children?: ReactNode }) => {
         "XXX-SToken": get()
       }
     })
-    const data = (await response.json()).t
-    setUser({
-      ...data,
-      avatar: data.avataraddr ? URL.createObjectURL(data.avataraddr) : null
-    })
+    if (response.status === 200) {
+      const data = (await response.json()).t
+      setUser({
+        ...data,
+        avatar: data.avataraddr ? URL.createObjectURL(data.avataraddr) : null
+      })
+    }
   }
 
   useEffect(() => {
