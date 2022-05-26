@@ -8,6 +8,8 @@ Echoq是一款二人开发的应用，初衷是保持简洁性的同时帮助朋
 
 Demo请见：<a href="http://www.echoq.lol">Echoq</a>
 
+## 版本及更新
+当前版本V 1.0.0 RELEASE，请等待后续更多更新
 
 ## 作者
 图标设计，数据库，后端开发：Harold澂冰
