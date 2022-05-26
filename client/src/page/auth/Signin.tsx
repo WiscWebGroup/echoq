@@ -79,6 +79,9 @@ const Signin = () => {
       data: {
         username: state.username,
         password: state.password
+      },
+      headers: {
+        "Content-Type": "application/json"
       }
     })
     const data = await response.json()
