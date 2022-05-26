@@ -34,27 +34,42 @@ import {
   useDisclosure,
   VStack
 } from "@chakra-ui/react"
-import { useRef } from "react"
+import { useRef, useState } from "react"
+import useApiResponse from "../../common/hooks/useApiResponse"
+import useLocalStorage, { TOKEN_KEY } from "../../common/hooks/useLocalStorage"
 import DotIcon from "../icons/DotIcon"
 
 import "./owner-card.css"
 
 export interface IOwnerCard {
   order: number
+  questionId: number
   question: string
   response?: string
   show: boolean
   askedAt: Date
   respondedAt?: Date
+
+  handleEdit: (
+    questionId: number,
+    show: boolean,
+    questionResponse: string
+  ) => void
+  handleTurn: (id: number, show: boolean) => void
+  handleDelete: (id: number) => void
 }
 
 const OwnerCard = ({
   order,
+  questionId,
   question,
   response,
   show,
   askedAt,
-  respondedAt
+  respondedAt,
+  handleEdit,
+  handleTurn,
+  handleDelete
 }: IOwnerCard) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const {
@@ -69,12 +84,28 @@ const OwnerCard = ({
   } = useDisclosure()
   const cancelRef = useRef<HTMLButtonElement>(null)
 
+  const [newResponse, setNewResponse] = useState("")
+
   const toggleCollapse = () => {
     if (isOpen) {
       onClose()
     } else {
       onOpen()
     }
+  }
+
+  const handleQuestionEdit = () => {
+    handleEdit(questionId, show, newResponse)
+    onModalClose()
+  }
+
+  const handleQuestionTurn = () => {
+    handleTurn(questionId, !show)
+  }
+
+  const handleQuestionDelete = () => {
+    handleDelete(questionId)
+    onAlertClose()
   }
 
   return (
@@ -115,7 +146,12 @@ const OwnerCard = ({
                     >
                       Edit
                     </Button>
-                    <Button size="sm" colorScheme="yellow" variant="outline">
+                    <Button
+                      size="sm"
+                      colorScheme="yellow"
+                      variant="outline"
+                      onClick={handleQuestionTurn}
+                    >
                       Turn {show ? "private" : "public"}
                     </Button>
                     <Button size="sm" colorScheme="red" onClick={onAlertOpen}>
@@ -192,6 +228,8 @@ const OwnerCard = ({
                   <Textarea
                     resize="none"
                     placeholder="Write your response here"
+                    value={newResponse}
+                    onChange={(e) => setNewResponse(e.target.value)}
                   />
                   <FormHelperText fontSize="xs">
                     {response &&
@@ -205,7 +243,9 @@ const OwnerCard = ({
             <Button mr={3} onClick={onModalClose}>
               Close
             </Button>
-            <Button colorScheme="teal">Save</Button>
+            <Button colorScheme="teal" onClick={handleQuestionEdit}>
+              Save
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
@@ -228,7 +268,11 @@ const OwnerCard = ({
               <Button ref={cancelRef} onClick={onAlertClose} size="sm">
                 Cancel
               </Button>
-              <Button colorScheme="red" size="sm">
+              <Button
+                colorScheme="red"
+                size="sm"
+                onClick={handleQuestionDelete}
+              >
                 Delete
               </Button>
             </HStack>

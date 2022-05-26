@@ -80,6 +80,7 @@ export const dummyCardData = [
 export const dummyOwnerRCardData = [
   {
     order: 1,
+    questionId: 1,
     question: "Qsj sogzc?",
     response: "Nullam sit amet turpis elementum ligula vehicula consequat.",
     show: true,
@@ -88,6 +89,7 @@ export const dummyOwnerRCardData = [
   },
   {
     order: 2,
+    questionId: 1,
     question:
       "Zqr urhru pkmiw x di byu aidxoz Zqr urhru pkmiw x di byu aidxoz?",
     response:
@@ -98,6 +100,7 @@ export const dummyOwnerRCardData = [
   },
   {
     order: 3,
+    questionId: 1,
     question: "Mfe ucqdz bnven j yl off tspwzf?",
     response:
       "Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Etiam vel augue. Vestibulum rutrum rutrum neque. Aenean auctor gravida sem. Praesent id massa id nisl venenatis lacinia. Aenean sit amet justo. Morbi ut odio. Cras mi pede, malesuada in, imperdiet et, commodo vulputate, justo. In blandit ultrices enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.",
@@ -107,6 +110,7 @@ export const dummyOwnerRCardData = [
   },
   {
     order: 4,
+    questionId: 1,
     question: "Yfp rkdkn aalft g mk ovd jtqokg?",
     response:
       "Ut at dolor quis odio consequat varius. Integer ac leo. Pellentesque ultrices mattis odio. Donec vitae nisi. Nam ultrices, libero non mattis pulvinar, nulla pede ullamcorper augue, a suscipit nulla elit ac nulla. Sed vel enim sit amet nunc viverra dapibus. Nulla suscipit ligula in lacus.Ut at dolor quis odio consequat varius. Integer ac leo. Pellentesque ultrices mattis odio. Donec vitae nisi. Nam ultrices, libero non mattis pulvinar, nulla pede ullamcorper augue, a suscipit nulla elit ac nulla. Sed vel enim sit amet nunc viverra dapibus. Nulla suscipit ligula in lacus.",
@@ -116,6 +120,7 @@ export const dummyOwnerRCardData = [
   },
   {
     order: 5,
+    questionId: 1,
     question: "Het ilefa ndbvy j uk nkc rfqcgz?",
     response:
       "Proin interdum mauris non ligula pellentesque ultrices. Phasellus id sapien in sapien iaculis congue. Vivamus metus arcu, adipiscing molestie, hendrerit at, vulputate vitae, nisl. Aenean lectus. Pellentesque eget nunc. Donec quis orci eget orci vehicula condimentum. Curabitur in libero ut massa volutpat convallis. Morbi odio odio, elementum eu, interdum eu, tincidunt in, leo. Maecenas pulvinar lobortis est. Phasellus sit amet erat.",
@@ -125,6 +130,7 @@ export const dummyOwnerRCardData = [
   },
   {
     order: 6,
+    questionId: 1,
     question: "Ehe vzdhl zekwg s nx gjs uthyvw?",
     response:
       "Curabitur in libero ut massa volutpat convallis. Morbi odio odio, elementum eu, interdum eu, tincidunt in, leo. Maecenas pulvinar lobortis est. Phasellus sit amet erat. Nulla tempus. Vivamus in felis eu sapien cursus vestibulum. Proin eu mi. Nulla ac enim.",
@@ -134,6 +140,7 @@ export const dummyOwnerRCardData = [
   },
   {
     order: 7,
+    questionId: 1,
     question: "Gft ucqdr ftzar j bb drm uomlcr?",
     response:
       "Nunc nisl. Duis bibendum, felis sed interdum venenatis, turpis enim blandit mi, in porttitor pede justo eu massa. Donec dapibus. Duis at velit eu est congue elementum. In hac habitasse platea dictumst. Morbi vestibulum, velit id pretium iaculis, diam erat fermentum justo, nec condimentum neque sapien placerat ante. Nulla justo. Aliquam quis turpis eget elit sodales scelerisque.",
@@ -143,6 +150,7 @@ export const dummyOwnerRCardData = [
   },
   {
     order: 8,
+    questionId: 1,
     question: "Lmn abqbk vfmeu q sk lkc jfklfq?",
     response:
       "Etiam faucibus cursus urna. Ut tellus. Nulla ut erat id mauris vulputate elementum. Nullam varius. Nulla facilisi. Cras non velit nec nisi vulputate nonummy.",
@@ -152,6 +160,7 @@ export const dummyOwnerRCardData = [
   },
   {
     order: 9,
+    questionId: 1,
     question: "Jcy igbhs srouw j iv xfs buwbvb?",
     response:
       "Praesent id massa id nisl venenatis lacinia. Aenean sit amet justo. Morbi ut odio. Cras mi pede, malesuada in, imperdiet et, commodo vulputate, justo. In blandit ultrices enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Proin interdum mauris non ligula pellentesque ultrices. Phasellus id sapien in sapien iaculis congue.",
@@ -161,6 +170,7 @@ export const dummyOwnerRCardData = [
   },
   {
     order: 10,
+    questionId: 1,
     question: "Hsz qzqeo pjotp a nb jri jxxryx?",
     response:
       "Morbi vel lectus in quam fringilla rhoncus. Mauris enim leo, rhoncus sed, vestibulum sit amet, cursus id, turpis. Integer aliquet, massa id lobortis convallis, tortor risus dapibus augue, vel accumsan tellus nisi eu orci. Mauris lacinia sapien quis libero. Nullam sit amet turpis elementum ligula vehicula consequat. Morbi a ipsum. Integer a nibh. In quis justo.",

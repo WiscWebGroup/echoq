@@ -1,4 +1,4 @@
-import { VStack, Image, Text, Divider } from "@chakra-ui/react"
+import { Divider, Image, Text, VStack } from "@chakra-ui/react"
 import { useState, ChangeEvent, useEffect } from "react"
 
 import useDebounce from "../../common/hooks/useDebounce"
@@ -6,11 +6,13 @@ import OwnerCard from "../../components/qcard/OwnerCard"
 import SearchBar from "../../components/searchbar/SearchBar"
 import LogoImage from "../../asset/png/logo.png"
 import { useQuestion, useQuestionUpdate } from "./QuestionContext"
-import { useAlertUpdate } from "../../components/alert/AlertProvider"
 import useApiResponse from "../../common/hooks/useApiResponse"
 import useLocalStorage, { TOKEN_KEY } from "../../common/hooks/useLocalStorage"
+import { useAlertUpdate } from "../../components/alert/AlertProvider"
 
-const NewContent = () => {
+import "./echo.css"
+
+const RespondedContent = () => {
   const questions = useQuestion()
   const setAlert = useAlertUpdate()
   const { makeRequest } = useApiResponse()
@@ -20,13 +22,13 @@ const NewContent = () => {
   const [search, setSearch] = useState("")
 
   useEffect(() => {
-    getQuestions("unanswered")
+    getQuestions("answered")
   }, [])
 
   useDebounce(
     () => {
-      if (search !== "") searchQuestion(search, "unanswered")
-      if (search === "") getQuestions("unanswered")
+      if (search !== "") searchQuestion(search, "answered")
+      if (search === "") getQuestions("answered")
     },
     500,
     [search]
@@ -51,7 +53,7 @@ const NewContent = () => {
       }
     })
     if (response.status === 200) {
-      getQuestions("unanswered")
+      getQuestions("answered")
       setAlert({
         status: "success",
         text: "Succesesfully edited the response",
@@ -107,7 +109,7 @@ const NewContent = () => {
       }
     })
     if (response.status === 200) {
-      getQuestions("unanswered")
+      getQuestions("answered")
       setAlert({
         status: "success",
         text: "Succesesfully deleted a question and its response",
@@ -140,21 +142,33 @@ const NewContent = () => {
           {questions.length} results...
         </Text>
         <VStack width="100%" spacing={5} divider={<Divider />}>
-          {questions.map(({ order, questionId, question, show, askedAt }) => {
-            return (
-              <OwnerCard
-                key={order}
-                order={order}
-                questionId={questionId}
-                question={question}
-                show={show}
-                askedAt={new Date(askedAt)}
-                handleEdit={handleEdit}
-                handleTurn={handleTurn}
-                handleDelete={handleDelete}
-              />
-            )
-          })}
+          {questions.map(
+            ({
+              order,
+              questionId,
+              question,
+              response,
+              show,
+              askedAt,
+              respondedAt
+            }) => {
+              return (
+                <OwnerCard
+                  key={questionId}
+                  order={order}
+                  questionId={questionId}
+                  question={question}
+                  response={response}
+                  show={show}
+                  askedAt={new Date(askedAt)}
+                  respondedAt={new Date(respondedAt)}
+                  handleEdit={handleEdit}
+                  handleTurn={handleTurn}
+                  handleDelete={handleDelete}
+                />
+              )
+            }
+          )}
         </VStack>
       </VStack>
       <div className="echo-content-logo-container">
@@ -167,4 +181,4 @@ const NewContent = () => {
   )
 }
 
-export default NewContent
+export default RespondedContent
