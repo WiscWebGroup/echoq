@@ -16,118 +16,53 @@ import {
   useDisclosure,
   VStack
 } from "@chakra-ui/react"
-import { ChangeEvent, useEffect, useState } from "react"
+import { ChangeEvent, useEffect, useReducer, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 import useApiResponse from "../../common/hooks/useApiResponse"
 import useLocalStorage, { TOKEN_KEY } from "../../common/hooks/useLocalStorage"
-import { containsSpecialChars } from "../../common/utils/utils"
-import { NormalHeader } from "../../components/Nav"
+import { NormalHeader } from "../../components/Header"
+import { signupReducer, initialFormState } from "./reducers/signupReducer"
 
 import "./signup.css"
-
-interface IUserRegistration {
-  name: string
-  isNameEmpty: boolean
-  isNameError: boolean
-  username: string
-  isUsernameEmpty: boolean
-  isUsernameError: boolean
-  password: string
-  isPasswordEmpty: boolean
-  isPasswordError: boolean
-  confirmPassword: string
-  isConfirmPasswordEmpty: boolean
-  isConfirmPasswordError: boolean
-}
-
-const defaultUser: IUserRegistration = {
-  name: "",
-  isNameEmpty: true,
-  isNameError: false,
-  username: "",
-  isUsernameEmpty: true,
-  isUsernameError: false,
-  password: "",
-  isPasswordEmpty: true,
-  isPasswordError: false,
-  confirmPassword: "",
-  isConfirmPasswordEmpty: true,
-  isConfirmPasswordError: false
-}
 
 const Signup = () => {
   let navigate = useNavigate()
   const { makeRequest } = useApiResponse()
-  const [loading, setLoading] = useState(false)
-  const [canCreate, setCanCreate] = useState(false)
+  const { get, set } = useLocalStorage(TOKEN_KEY)
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const { get, set, remove } = useLocalStorage(TOKEN_KEY)
-  const [user, setUser] = useState(defaultUser)
+
+  const [loading, setLoading] = useState(false)
+  const [state, dispatch] = useReducer(signupReducer, initialFormState)
 
   useEffect(() => {
-    setCanCreate(
-      !user.isNameEmpty &&
-        !user.isUsernameEmpty &&
-        !user.isPasswordEmpty &&
-        !user.isConfirmPasswordEmpty &&
-        !user.isNameError &&
-        !user.isUsernameError &&
-        !user.isPasswordError &&
-        !user.isConfirmPasswordError
-    )
-  }, [user])
+    if (get() !== null) navigate("/account")
+  }, [get, navigate])
 
   const handleChangeName = (event: ChangeEvent<HTMLInputElement>) => {
-    setUser((prevState) => ({
-      ...prevState,
-      name: event.target.value,
-      isNameEmpty: event.target.value.length === 0,
-      isNameError: containsSpecialChars(event.target.value)
-    }))
+    dispatch({ type: "name", payload: event.target.value })
   }
 
   const handleChangeUsername = (event: ChangeEvent<HTMLInputElement>) => {
-    setUser((prevState) => ({
-      ...prevState,
-      username: event.target.value,
-      isUsernameEmpty: event.target.value.length === 0,
-      isUsernameError: containsSpecialChars(event.target.value)
-    }))
+    dispatch({ type: "username", payload: event.target.value })
   }
 
   const handleChangePassword = (event: ChangeEvent<HTMLInputElement>) => {
-    setUser((prevState) => ({
-      ...prevState,
-      password: event.target.value,
-      isPasswordEmpty: event.target.value.length === 0,
-      isPasswordError:
-        event.target.value.length < 8 && event.target.value.length !== 0,
-      isConfirmPasswordError:
-        event.target.value !== prevState.confirmPassword &&
-        !prevState.isConfirmPasswordEmpty
-    }))
+    dispatch({ type: "password", payload: event.target.value })
   }
 
-  const handleChangeConfirmPassword = (
-    event: ChangeEvent<HTMLInputElement>
-  ) => {
-    setUser((prevState) => ({
-      ...prevState,
-      confirmPassword: event.target.value,
-      isConfirmPasswordEmpty: event.target.value.length === 0,
-      isConfirmPasswordError: event.target.value !== prevState.password
-    }))
+  const handleChangeConfirm = (event: ChangeEvent<HTMLInputElement>) => {
+    dispatch({ type: "confirm", payload: event.target.value })
   }
 
   const displayMessageForName = () => {
-    if (user.isNameEmpty) {
+    if (state.isNameEmpty) {
       return (
         <FormHelperText fontSize="xs">
           Enter the name you'd like others to call you.
         </FormHelperText>
       )
-    } else if (user.isNameError) {
+    } else if (state.isNameError) {
       return (
         <FormErrorMessage fontSize="xs">
           Name must not contain any special character!
@@ -137,13 +72,13 @@ const Signup = () => {
   }
 
   const displayMessageForUsername = () => {
-    if (user.isUsernameEmpty) {
+    if (state.isUsernameEmpty) {
       return (
         <FormHelperText fontSize="xs">
           Enter the username you'd like to sign in with.
         </FormHelperText>
       )
-    } else if (user.isUsernameError) {
+    } else if (state.isUsernameError) {
       return (
         <FormErrorMessage fontSize="xs">
           Username must not contain any special character!
@@ -153,13 +88,13 @@ const Signup = () => {
   }
 
   const displayMessageForPassword = () => {
-    if (user.isPasswordEmpty) {
+    if (state.isPasswordEmpty) {
       return (
         <FormHelperText fontSize="xs">
           Enter a password of a minimum of 8 characters.
         </FormHelperText>
       )
-    } else if (user.isPasswordError) {
+    } else if (state.isPasswordError) {
       return (
         <FormErrorMessage fontSize="xs">
           Password must be at least 8 characters!
@@ -169,11 +104,11 @@ const Signup = () => {
   }
 
   const displayMessageForConfirmPassword = () => {
-    if (user.isConfirmPasswordEmpty) {
+    if (state.isConfirmPasswordEmpty) {
       return (
         <FormHelperText fontSize="xs">Enter the password again.</FormHelperText>
       )
-    } else if (user.isConfirmPasswordError) {
+    } else if (state.isConfirmPasswordError) {
       return (
         <FormErrorMessage fontSize="xs">
           This does not match the password!
@@ -188,12 +123,15 @@ const Signup = () => {
       path: "/user/signup",
       method: "POST",
       data: {
-        name: user.name,
-        username: user.username,
-        password: user.password
+        name: state.name,
+        username: state.username,
+        password: state.password
+      },
+      headers: {
+        "Content-Type": "application/json"
       }
     })
-    const data = response.json()
+    const data = await response.json()
     if (data.t === 1) {
       set(data.token)
       setLoading(false)
@@ -201,12 +139,7 @@ const Signup = () => {
     } else {
       setLoading(false)
       onOpen()
-      setUser((prevState) => ({
-        ...prevState,
-        username: defaultUser.username,
-        isUsernameEmpty: true,
-        isUsernameError: false
-      }))
+      dispatch({ type: "username", payload: "" })
     }
   }
 
@@ -214,14 +147,12 @@ const Signup = () => {
     <div className="signup-container">
       <NormalHeader variant="signup" />
       <div className="signup-form-container">
-        <VStack spacing={8}>
+        <VStack spacing={8} width="calc(100% - 30px)">
           <Text fontSize="2xl">Sign Up</Text>
           <FormControl
             isRequired
             id="display-name"
-            variant="floating"
-            width="360px"
-            isInvalid={user.isNameError || user.isNameEmpty}
+            isInvalid={state.isNameError || state.isNameEmpty}
           >
             <FormLabel htmlFor="display-name" fontSize="sm">
               Name
@@ -229,7 +160,7 @@ const Signup = () => {
             <Input
               id="display-name"
               type="text"
-              value={user.name}
+              value={state.name}
               onChange={handleChangeName}
               disabled={loading}
               placeholder="Name"
@@ -239,9 +170,7 @@ const Signup = () => {
           <FormControl
             isRequired
             id="username"
-            variant="floating"
-            width="360px"
-            isInvalid={user.isUsernameError || user.isUsernameEmpty}
+            isInvalid={state.isUsernameError || state.isUsernameEmpty}
           >
             <FormLabel htmlFor="username" fontSize="sm">
               Username
@@ -249,7 +178,7 @@ const Signup = () => {
             <Input
               id="username"
               type="text"
-              value={user.username}
+              value={state.username}
               onChange={handleChangeUsername}
               disabled={loading}
               placeholder="Username"
@@ -259,9 +188,7 @@ const Signup = () => {
           <FormControl
             isRequired
             id="password"
-            variant="floating"
-            width="360px"
-            isInvalid={user.isPasswordError || user.isPasswordEmpty}
+            isInvalid={state.isPasswordError || state.isPasswordEmpty}
           >
             <FormLabel htmlFor="password" fontSize="sm">
               Password
@@ -269,7 +196,7 @@ const Signup = () => {
             <Input
               id="password"
               type="password"
-              value={user.password}
+              value={state.password}
               onChange={handleChangePassword}
               disabled={loading}
               placeholder="Password"
@@ -279,10 +206,8 @@ const Signup = () => {
           <FormControl
             isRequired
             id="confirm-password"
-            variant="floating"
-            width="360px"
             isInvalid={
-              user.isConfirmPasswordError || user.isConfirmPasswordEmpty
+              state.isConfirmPasswordError || state.isConfirmPasswordEmpty
             }
           >
             <FormLabel htmlFor="confirm-password" fontSize="sm">
@@ -291,8 +216,8 @@ const Signup = () => {
             <Input
               id="confirm-password"
               type="password"
-              value={user.confirmPassword}
-              onChange={handleChangeConfirmPassword}
+              value={state.confirmPassword}
+              onChange={handleChangeConfirm}
               disabled={loading}
               placeholder="Confirm Password"
             />
@@ -302,16 +227,21 @@ const Signup = () => {
             colorScheme="teal"
             width="150px"
             onClick={handleSignUp}
-            disabled={!canCreate}
+            disabled={!state.canCreate}
           >
             Sign Up
           </Button>
         </VStack>
       </div>
 
-      <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
+      <Modal
+        blockScrollOnMount={false}
+        isOpen={isOpen}
+        onClose={onClose}
+        isCentered
+      >
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent width="calc(100% - 30px)">
           <ModalHeader color="red">Error</ModalHeader>
           <ModalCloseButton />
           <ModalBody>

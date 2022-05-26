@@ -1,17 +1,15 @@
+import { useCallback } from "react"
+
 export const TOKEN_KEY = "echoq-token"
 
 export const useLocalStorage = (key: string) => {
-  return {
-    get: () => {
-      return localStorage.getItem(key)
-    },
-    set: (val: string) => {
-      return localStorage.setItem(key, val)
-    },
-    remove: () => {
-      localStorage.removeItem(key)
-    }
-  }
+  const get = useCallback(() => localStorage.getItem(key), [key])
+  const set = useCallback(
+    (val: string) => localStorage.setItem(key, val),
+    [key]
+  )
+  const remove = useCallback(() => localStorage.removeItem(key), [key])
+  return { get, set, remove }
 }
 
 export default useLocalStorage

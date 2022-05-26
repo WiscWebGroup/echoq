@@ -1,0 +1,24 @@
+.account-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.account-info-container {
+  width: calc(100% - 30px);
+  display: flex;
+  justify-items: space-between;
+  align-items: center;
+  flex-direction: column;
+  overflow-y: scroll;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.account-info-container::-webkit-scrollbar {
+  display: none;
+}
