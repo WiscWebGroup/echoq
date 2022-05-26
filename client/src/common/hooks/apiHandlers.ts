@@ -16,11 +16,8 @@ export const useUnauthorizedHandler = () => {
 }
 
 export const useErrorHandler = () => {
-  const { remove } = useLocalStorage(TOKEN_KEY)
-
   const handler: TRespHandler = (response: Response) => {
     console.debug("Server error")
-    remove()
     return response
   }
   return handler
