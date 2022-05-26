@@ -126,6 +126,9 @@ const Signup = () => {
         name: state.name,
         username: state.username,
         password: state.password
+      },
+      headers: {
+        "Content-Type": "application/json"
       }
     })
     const data = await response.json()
