@@ -62,6 +62,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
 
     @Override
+    public int updateUserName(User user) {
+        return mapper.updateUserName(user);
+    }
+
+    @Override
+    public int updateUserPassword(User user) {
+        user.setPassword(AESUtils.aesEncryptStr(user.getPassword(), AESUtils.getPkey()));
+        return mapper.updateUserPassword(user);
+    }
+
+    @Override
+    public int updateUserWhatsup(User user) {
+        return mapper.updateUserWhatsup(user);
+    }
+
+    @Override
     public int updateAvatar(File file, int userId) {
         return mapper.updateAvatar(FileOperation.getBase64Image(file), userId);
     }
@@ -127,43 +143,70 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
 
     @Override
-    public List<Questions> selectQuestionsInv(String username) {
-        int userId = mapper.selectUser(username);
+    public List<Questions> selectQuestionsInv(Integer userId) {
         return mapper.selectQuestionsInv(userId);
     }
 
     @Override
-    public List<Questions> selectQuestionsUnansweredInv(String username) {
-        int userId = mapper.selectUser(username);
+    public List<Questions> selectQuestionsUnansweredInv(Integer userId) {
         return mapper.selectQuestionsUnansweredInv(userId);
     }
 
     @Override
-    public List<Questions> selectQuestionsAnsweredInv(String username) {
-        int userId = mapper.selectUser(username);
+    public List<Questions> selectQuestionsAnsweredInv(Integer userId) {
         return mapper.selectQuestionsAnsweredInv(userId);
     }
 
     @Override
-    public List<Questions> selectQuestionConditionalInvisible(String username, String condition) {
+    public List<Questions> selectQuestionsInvIP(int userId, int ip, boolean visibility, boolean answered) {
+        if(visibility)
+        {
+            if(answered)
+            {
+                return mapper.selectQuestionsAnsweredInvIPPublic(userId, ip);
+            }else {
+                return mapper.selectQuestionsUnansweredInvIPPublic(userId, ip);
+            }
+        }else{
+            if(answered)
+            {
+                return mapper.selectQuestionsAnsweredInvIPPrivate(userId, ip);
+            }else {
+                return mapper.selectQuestionsUnansweredInvIPPrivate(userId, ip);
+            }
+        }
+    }
+
+    @Override
+    public List<Questions> selectQuestionConditionalInvisible(Integer userId, String condition) {
         if (condition == null || condition == "")
         {
-            return selectQuestionsInv(username);
+            return selectQuestionsInv(userId);
         }
         if (condition.equals("answered"))
         {
-            return selectQuestionsUnansweredInv(username);
+            return selectQuestionsAnsweredInv(userId);
         }
         if (condition.equals("unanswered"))
         {
-            return selectQuestionsAnsweredInv(username);
+            return selectQuestionsUnansweredInv(userId);
         }
         return null;
     }
 
     @Override
-    public List<Questions> searchQuestion(int userId, String searchContent) {
-        return mapper.searchQuestion(userId, searchContent);
+    public List<Questions> searchQuestion(int userId, String searchContent, String condition) {
+        if (condition == null || condition.equals(""))
+        {
+            return mapper.searchQuestion(userId, searchContent);
+        }else if (condition.equals("answered"))
+        {
+            return mapper.searchQuestionAnswered(userId, searchContent);
+        }else if (condition.equals("unanswered"))
+        {
+            return mapper.searchQuestionUnanswered(userId, searchContent);
+        }
+        return null;
     }
 
     @Override
@@ -175,13 +218,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public User selectUserInfo(int userId) {
         User user = mapper.selectUserInfo(userId);
         try {
-            user.setPassword(AESUtils.aesDecodeStr(user.getPassword(), AESUtils.getPkey()));
+            user.setPassword("");
         } catch (Exception e) {
             e.printStackTrace();
         }
         return user;
     }
 
-
+    @Override
+    public User selectUserDisplayInfo(int userId) {
+        return mapper.selectUserDisplayInfo(userId);
+    }
 
 }
