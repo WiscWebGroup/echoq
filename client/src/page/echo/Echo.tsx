@@ -3,7 +3,8 @@ import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react"
 import { AuthedFooter } from "../../components/Footer"
 import { AuthedHeader } from "../../components/Header"
 import NewContent from "./NewContent"
-import UnrespondedContent from "./UnrespondedContent"
+import UnrespondedContent from "./RespondedContent"
+import QuestionProvider from "./QuestionContext"
 
 import "./echo.css"
 
@@ -11,6 +12,7 @@ const Echo = () => {
   return (
     <div className="echo-container">
       <AuthedHeader page="My Echo" />
+
       <div className="echo-body-container">
         <Tabs width="100%" isFitted colorScheme="teal" isLazy>
           <TabList>
@@ -20,10 +22,14 @@ const Echo = () => {
 
           <TabPanels>
             <TabPanel padding="20px 0 0 0">
-              <UnrespondedContent />
+              <QuestionProvider>
+                <UnrespondedContent />
+              </QuestionProvider>
             </TabPanel>
             <TabPanel padding="20px 0 0 0">
-              <NewContent />
+              <QuestionProvider>
+                <NewContent />
+              </QuestionProvider>
             </TabPanel>
           </TabPanels>
         </Tabs>
