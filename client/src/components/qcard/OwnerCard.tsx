@@ -100,6 +100,11 @@ const OwnerCard = ({
     setIsEditLoading(true)
     handleEdit(questionId, show, newResponse)
     setIsEditLoading(false)
+    handleResetResponse()
+  }
+
+  const handleResetResponse = () => {
+    setNewResponse("")
     onModalClose()
   }
 
@@ -201,7 +206,7 @@ const OwnerCard = ({
         <ModalOverlay />
         <ModalContent width="calc(100% - 30px)">
           <ModalHeader>Edit Response</ModalHeader>
-          <ModalCloseButton />
+          <ModalCloseButton onClick={handleResetResponse} />
           <ModalBody>
             <VStack spacing={4}>
               <Box width="100%">
@@ -249,7 +254,7 @@ const OwnerCard = ({
             </VStack>
           </ModalBody>
           <ModalFooter>
-            <Button mr={3} onClick={onModalClose}>
+            <Button mr={3} onClick={handleResetResponse}>
               Close
             </Button>
             <Button
