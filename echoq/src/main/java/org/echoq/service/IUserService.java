@@ -32,6 +32,7 @@ public interface IUserService extends IService<User> {
     int deleteQuestion(int questionId);
     List<Questions> selectQuestions(int userId);
     List<Questions> searchQuestion(int userId, String searchContent, String condition);
+    List<Questions> searchQuestionUser(int userId, String searchContent, String condition, String ip);
     int selectUser(String username);
     User selectUserInfo(int userId);
     User selectUserDisplayInfo(int userId);
@@ -43,7 +44,7 @@ public interface IUserService extends IService<User> {
     List<Questions> selectQuestionsUnansweredInv(Integer userId);
     List<Questions> selectQuestionsAnsweredInv(Integer userId);
 
-    List<Questions> selectQuestionsInvIP(int userId, int ip, boolean visibility, boolean answered);
+    List<Questions> selectQuestionsInvIP(int userId, String ip, boolean visibility, boolean answered);
 
-    List<Questions> selectQuestionConditionalInvisible(Integer userId, String condition);
+    List<Questions> selectQuestionConditionalInvisible(Integer userId, String condition, String ip);
 }

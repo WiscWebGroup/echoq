@@ -182,9 +182,9 @@ public class UserController {
     }
 
     @GetMapping("/getQ/{id}")
-    public Result<List<Questions>> selectQuestionsVisible(@PathVariable Integer id, String condition)
+    public Result<List<Questions>> selectQuestionsVisible(@PathVariable Integer id, String condition, String ip)
     {
-        List<Questions> questions = service.selectQuestionConditionalInvisible(id, condition);
+        List<Questions> questions = service.selectQuestionConditionalInvisible(id, condition, ip);
         return new Result<>(questions, 200);
     }
 
@@ -318,14 +318,14 @@ public class UserController {
     }
 
     @GetMapping("/searchQuestionUser")
-    public Result<List<Questions>> searchQuestionUser(Integer id, String searchContent, String condition, HttpServletRequest request) {
+    public Result<List<Questions>> searchQuestionUser(Integer id, String searchContent, String condition, String ip) {
         if (id == null)
             return new Result<>(null, 401);
-        return new Result<>(service.searchQuestion(id, searchContent, condition), 200);
+        return new Result<>(service.searchQuestionUser(id, searchContent, condition, ip), 200);
     }
 
     @GetMapping("/selectQuestionsInvIP")
-    public Result<List<Questions>> selectQuestionsInvIP(Integer userId, Integer ip, Boolean visibility, Boolean answered)
+    public Result<List<Questions>> selectQuestionsInvIP(Integer userId, String ip, Boolean visibility, Boolean answered)
     {
         return new Result<>(service.selectQuestionsInvIP(userId, ip, visibility, answered), 200);
     }

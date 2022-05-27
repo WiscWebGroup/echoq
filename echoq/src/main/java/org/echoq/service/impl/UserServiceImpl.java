@@ -158,7 +158,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
 
     @Override
-    public List<Questions> selectQuestionsInvIP(int userId, int ip, boolean visibility, boolean answered) {
+    public List<Questions> selectQuestionsInvIP(int userId, String ip, boolean visibility, boolean answered) {
         if(visibility)
         {
             if(answered)
@@ -178,17 +178,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
 
     @Override
-    public List<Questions> selectQuestionConditionalInvisible(Integer userId, String condition) {
-        if (condition == null || condition == "")
+    public List<Questions> selectQuestionConditionalInvisible(Integer userId, String condition, String ip) {
+        boolean ipPresent = ip != null && !ip.equals("");
+        if (condition == null || condition.equals(""))
         {
+            if (ipPresent)
+                return mapper.selectQuestionsVisIP(userId, ip);
             return selectQuestionsInv(userId);
         }
         if (condition.equals("answered"))
         {
+            if (ipPresent)
+                return mapper.selectQuestionsAnsweredVisIP(userId, ip);
             return selectQuestionsAnsweredInv(userId);
         }
         if (condition.equals("unanswered"))
         {
+            if (ipPresent)
+                return mapper.selectQuestionsUnansweredVisIP(userId, ip);
             return selectQuestionsUnansweredInv(userId);
         }
         return null;
@@ -205,6 +212,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         }else if (condition.equals("unanswered"))
         {
             return mapper.searchQuestionUnanswered(userId, searchContent);
+        }
+        return null;
+    }
+
+    @Override
+    public List<Questions> searchQuestionUser(int userId, String searchContent, String condition, String ip) {
+        if (condition == null || condition.equals(""))
+        {
+            return mapper.searchQuestionUser(userId, searchContent, ip);
+        }else if (condition.equals("answered"))
+        {
+            return mapper.searchQuestionAnsweredUser(userId, searchContent, ip);
+        }else if (condition.equals("unanswered"))
+        {
+            return mapper.searchQuestionUnansweredUser(userId, searchContent, ip);
         }
         return null;
     }
