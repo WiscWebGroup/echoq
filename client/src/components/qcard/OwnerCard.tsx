@@ -35,8 +35,7 @@ import {
   VStack
 } from "@chakra-ui/react"
 import { useRef, useState } from "react"
-import useApiResponse from "../../common/hooks/useApiResponse"
-import useLocalStorage, { TOKEN_KEY } from "../../common/hooks/useLocalStorage"
+
 import DotIcon from "../icons/DotIcon"
 
 import "./owner-card.css"
@@ -85,6 +84,9 @@ const OwnerCard = ({
   const cancelRef = useRef<HTMLButtonElement>(null)
 
   const [newResponse, setNewResponse] = useState("")
+  const [isEditLoading, setIsEditLoading] = useState(false)
+  const [isTurnLoading, setIsTurnLoading] = useState(false)
+  const [isDeleteLoading, setIsDeleteLoading] = useState(false)
 
   const toggleCollapse = () => {
     if (isOpen) {
@@ -95,16 +97,22 @@ const OwnerCard = ({
   }
 
   const handleQuestionEdit = () => {
+    setIsEditLoading(true)
     handleEdit(questionId, show, newResponse)
+    setIsEditLoading(false)
     onModalClose()
   }
 
   const handleQuestionTurn = () => {
+    setIsTurnLoading(true)
     handleTurn(questionId, !show)
+    setIsTurnLoading(false)
   }
 
   const handleQuestionDelete = () => {
+    setIsDeleteLoading(true)
     handleDelete(questionId)
+    setIsDeleteLoading(false)
     onAlertClose()
   }
 
@@ -151,6 +159,7 @@ const OwnerCard = ({
                       colorScheme="yellow"
                       variant="outline"
                       onClick={handleQuestionTurn}
+                      isLoading={isTurnLoading}
                     >
                       Turn {show ? "private" : "public"}
                     </Button>
@@ -243,7 +252,11 @@ const OwnerCard = ({
             <Button mr={3} onClick={onModalClose}>
               Close
             </Button>
-            <Button colorScheme="teal" onClick={handleQuestionEdit}>
+            <Button
+              colorScheme="teal"
+              isLoading={isEditLoading}
+              onClick={handleQuestionEdit}
+            >
               Save
             </Button>
           </ModalFooter>
@@ -272,6 +285,7 @@ const OwnerCard = ({
                 colorScheme="red"
                 size="sm"
                 onClick={handleQuestionDelete}
+                isLoading={isDeleteLoading}
               >
                 Delete
               </Button>

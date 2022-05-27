@@ -7,8 +7,7 @@ const defaultHeaders = {
   Accept: "application/json"
 }
 
-// set env var for this in production
-const DEBUG_ENDPOINT = "http://192.168.1.110:8080" // for debug only
+const ORIGIN = process.env.REACT_APP_API_URL
 
 async function fetchMultipartData({
   path,
@@ -25,7 +24,7 @@ async function fetchMultipartData({
   onUnauthorized: TRespHandler
   onError: TRespHandler
 }) {
-  const response = await fetch(DEBUG_ENDPOINT + path, {
+  const response = await fetch(ORIGIN + path, {
     method: method,
     body: data,
     headers: headers ? headers : defaultHeaders

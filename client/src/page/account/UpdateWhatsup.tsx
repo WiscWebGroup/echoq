@@ -6,6 +6,9 @@ import {
   AlertDialogHeader,
   AlertDialogOverlay,
   Button,
+  FormControl,
+  FormErrorMessage,
+  FormHelperText,
   Heading,
   HStack,
   Text,
@@ -13,7 +16,7 @@ import {
   useDisclosure,
   VStack
 } from "@chakra-ui/react"
-import { useEffect, useRef, useState } from "react"
+import { ChangeEvent, useRef, useState } from "react"
 
 import { useUser, useUserUpdate } from "./UserContext"
 import useApiResponse from "../../common/hooks/useApiResponse"
@@ -30,23 +33,35 @@ const UpdateWhatsup = () => {
   const { get } = useLocalStorage(TOKEN_KEY)
   const cancelRef = useRef<HTMLButtonElement>(null)
   const { isOpen, onOpen, onClose } = useDisclosure()
+
+  const [whatsup, setWhatsup] = useState("")
+  const [isOversize, setIsOversize] = useState(false)
+  const [isSaveLoading, setIsSaveLoading] = useState(false)
   const [isSaveDisabled, setIsSaveDisabled] = useState(true)
-  const [whatsup, setWhatsup] = useState<string | null>("")
 
-  useEffect(() => {
-    setWhatsup(user.whatsup)
-  }, [user.whatsup])
-
-  useEffect(() => {
-    setIsSaveDisabled(whatsup === user.whatsup)
-  }, [whatsup, user.whatsup])
+  const handleChangeWhatsup = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    setWhatsup(event.target.value)
+    if (event.target.value === "" || event.target.value.length > 50) {
+      setIsSaveDisabled(true)
+      if (event.target.value.length > 50) {
+        setIsOversize(true)
+      } else {
+        setIsOversize(false)
+      }
+    } else {
+      setIsOversize(false)
+      setIsSaveDisabled(false)
+    }
+  }
 
   const handleCancel = () => {
-    setWhatsup(user.whatsup)
+    setWhatsup("")
+    setIsOversize(false)
     onClose()
   }
 
   const handleSave = async () => {
+    setIsSaveLoading(true)
     const response = await makeRequest({
       path: "/user/updateInfoWhatsup",
       method: "POST",
@@ -57,8 +72,8 @@ const UpdateWhatsup = () => {
       }
     })
     if (response.status === 200) {
-      setWhatsup("")
       fetchUser()
+      handleCancel()
       setAlert({
         status: "success",
         text: "Successfully updated your what's up.",
@@ -71,6 +86,7 @@ const UpdateWhatsup = () => {
         show: true
       })
     }
+    setIsSaveLoading(false)
     onClose()
   }
 
@@ -107,7 +123,12 @@ const UpdateWhatsup = () => {
                   <Button ref={cancelRef} onClick={handleCancel} size="sm">
                     Cancel
                   </Button>
-                  <Button colorScheme="teal" onClick={handleSave} size="sm">
+                  <Button
+                    colorScheme="teal"
+                    onClick={handleSave}
+                    isLoading={isSaveLoading}
+                    size="sm"
+                  >
                     Save
                   </Button>
                 </HStack>
@@ -119,14 +140,22 @@ const UpdateWhatsup = () => {
       <div className="section-content-container">
         <VStack spacing={3} width="100%">
           <Text>{user.whatsup}</Text>
-          <Textarea
-            resize="none"
-            value={whatsup || ""}
-            onChange={(e) => setWhatsup(e.target.value)}
-          />
-          <Text fontSize="xs" color="#718096" textAlign="left">
-            Type your thoughts, feelings, etc.
-          </Text>
+          <FormControl isInvalid={isOversize}>
+            <Textarea
+              resize="none"
+              value={whatsup}
+              placeholder="Update your what's up here"
+              onChange={handleChangeWhatsup}
+            />
+            <FormHelperText fontSize="xs">
+              Type your thoughts, feelings, etc.
+            </FormHelperText>
+            {isOversize && (
+              <FormErrorMessage fontSize="xs">
+                Your whatsup should not exceed 50 characters.
+              </FormErrorMessage>
+            )}
+          </FormControl>
         </VStack>
       </div>
     </div>

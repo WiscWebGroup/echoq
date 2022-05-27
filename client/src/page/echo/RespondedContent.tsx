@@ -20,15 +20,19 @@ const RespondedContent = () => {
   const { getQuestions, searchQuestion } = useQuestionUpdate()
 
   const [search, setSearch] = useState("")
+  const [isSearching, setIsSearching] = useState(true)
 
   useEffect(() => {
     getQuestions("answered")
+    setIsSearching(false)
   }, [])
 
   useDebounce(
     () => {
+      setIsSearching(true)
       if (search !== "") searchQuestion(search, "answered")
       if (search === "") getQuestions("answered")
+      setIsSearching(false)
     },
     500,
     [search]
@@ -133,13 +137,8 @@ const RespondedContent = () => {
             setSearch(e.target.value)
           }
         />
-        <Text
-          width="calc(100% - 20px)"
-          fontSize="md"
-          color="gray.400"
-          fontStyle="italic"
-        >
-          {questions.length} results...
+        <Text width="calc(100% - 20px)" color="gray.400" fontStyle="italic">
+          {questions.length} results {isSearching && "(fetching...)"}
         </Text>
         <VStack width="100%" spacing={5} divider={<Divider />}>
           {questions.map(
@@ -168,6 +167,16 @@ const RespondedContent = () => {
                 />
               )
             }
+          )}
+          {questions.length === 0 && (
+            <>
+              <Text width="calc(100% - 20px)" textAlign="center" color="gray">
+                You have not responded any questions yet.
+              </Text>
+              <Text width="calc(100% - 20px)" textAlign="center" color="gray">
+                Check out the new question tab.
+              </Text>
+            </>
           )}
         </VStack>
       </VStack>

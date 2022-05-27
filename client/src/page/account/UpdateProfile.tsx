@@ -11,6 +11,7 @@ import {
   HStack,
   Image,
   Input,
+  Text,
   useDisclosure,
   VStack
 } from "@chakra-ui/react"
@@ -26,7 +27,6 @@ import "./index.css"
 
 const UpdateProfile = () => {
   const user = useUser()
-  const formData = new FormData()
   const setAlert = useAlertUpdate()
   const fetchUser = useUserUpdate()
   const { get } = useLocalStorage(TOKEN_KEY)
@@ -35,13 +35,21 @@ const UpdateProfile = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { makeMultipartRequest } = useMultipartApiResponse()
 
+  const [file, setFile] = useState<File>(new File([], ""))
+  const [isOversize, setIsOversize] = useState(false)
+  const [isSaveLoading, setIsSaveLoading] = useState(false)
   const [isSaveDisabled, setIsSaveDisabled] = useState(true)
 
   const handleUploadFile = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
-      formData.append("img", event.target.files[0])
-      setIsSaveDisabled(false)
-      return
+      const f = event.target.files[0]
+      if (f.size <= 204800) {
+        setFile(f)
+        setIsOversize(false)
+        setIsSaveDisabled(false)
+        return
+      }
+      setIsOversize(true)
     }
     setIsSaveDisabled(true)
   }
@@ -57,13 +65,15 @@ const UpdateProfile = () => {
   }
 
   const handleSave = async () => {
+    setIsSaveLoading(true)
+    const formData = new FormData()
+    formData.append("img", file)
     const response = await makeMultipartRequest({
       path: "/user/updateInfoAvatar",
       method: "POST",
       data: formData,
       headers: {
-        "XXX-SToken": get(),
-        "Content-Type": "multipart/form-data"
+        "XXX-SToken": get()
       }
     })
     if (response.status === 200) {
@@ -81,6 +91,7 @@ const UpdateProfile = () => {
         show: true
       })
     }
+    setIsSaveLoading(false)
     onClose()
   }
 
@@ -117,7 +128,12 @@ const UpdateProfile = () => {
                   <Button ref={cancelRef} onClick={handleResetFile} size="sm">
                     Cancel
                   </Button>
-                  <Button colorScheme="teal" onClick={handleSave} size="sm">
+                  <Button
+                    colorScheme="teal"
+                    onClick={handleSave}
+                    isLoading={isSaveLoading}
+                    size="sm"
+                  >
                     Save
                   </Button>
                 </HStack>
@@ -133,7 +149,7 @@ const UpdateProfile = () => {
               <Image
                 borderRadius="full"
                 boxSize="100px"
-                src={user.avatar}
+                src={URL.createObjectURL(user.avatar)}
                 alt=""
               />
             ) : (
@@ -157,10 +173,15 @@ const UpdateProfile = () => {
           <Input
             ref={fileRef}
             type="file"
-            accept=""
+            accept="image/jpeg"
             onChange={handleUploadFile}
             display="none"
           />
+          {isOversize && (
+            <Text fontSize="sm" color="red">
+              File size should not exceed 200 KB.
+            </Text>
+          )}
         </VStack>
       </div>
     </div>

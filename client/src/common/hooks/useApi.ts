@@ -8,8 +8,7 @@ const defaultHeaders = {
   Accept: "application/json"
 }
 
-// set env var for this in production
-const DEBUG_ENDPOINT = "http://192.168.1.110:8080" // for debug only
+const ORIGIN = process.env.REACT_APP_API_URL
 
 async function fetchData({
   path,
@@ -26,7 +25,7 @@ async function fetchData({
   onUnauthorized: TRespHandler
   onError: TRespHandler
 }) {
-  const response = await fetch(DEBUG_ENDPOINT + path, {
+  const response = await fetch(ORIGIN + path, {
     method: method,
     body: data ? JSON.stringify(data) : null,
     headers: headers ? headers : defaultHeaders
@@ -34,6 +33,7 @@ async function fetchData({
     if (response.status === 401 && !!onUnauthorized) {
       return onUnauthorized(response)
     } else if (response.status === 404 && !!onError) {
+      console.debug(ORIGIN + path)
       console.debug("Endpoint " + path + " was not found")
       return response
     } else if (response.status === 401 && !!onUnauthorized) {
