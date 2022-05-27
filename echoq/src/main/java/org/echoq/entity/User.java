@@ -40,5 +40,17 @@ public class User implements Serializable {
 
     private String color;
 
-
+    @Override
+    public String toString() {
+        return "User{" +
+                "userid=" + userid +
+                ", username='" + username + '\'' +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", avataraddr='" + avataraddr + '\'' +
+                ", whatsup='" + whatsup + '\'' +
+                ", color='" + color + '\'' +
+                '}';
+    }
 }
