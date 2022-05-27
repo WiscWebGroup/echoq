@@ -86,6 +86,19 @@
         select questionId, anonyIp, question, response, visibility, updtime, crtime from `questions` where userId = #{userId} and response is not NULL and response != '' and visibility = 1 order by updtime DESC
     </select>
 
+    <!-- select user -->
+    <select id="selectQuestionsVisIP" resultType="org.echoq.entity.Questions">
+        select questionId, anonyIp, question, response, visibility, updtime, crtime from `questions` where userId = #{userId} and (visibility = 1 or (visibility = 0 and anonyIp = #{ip}))
+    </select>
+
+    <select id="selectQuestionsUnansweredVisIP" resultType="org.echoq.entity.Questions">
+        select questionId, anonyIp, question, response, visibility, updtime, crtime from `questions` where userId = #{userId} and (response is NULL or response = '') and (visibility = 1 or (visibility = 0 and anonyIp = #{ip})) order by crtime DESC
+    </select>
+
+    <select id="selectQuestionsAnsweredVisIP" resultType="org.echoq.entity.Questions">
+        select questionId, anonyIp, question, response, visibility, updtime, crtime from `questions` where userId = #{userId} and response is not NULL and response != '' and (visibility = 1 or (visibility = 0 and anonyIp = #{ip})) order by updtime DESC
+    </select>
+    <!-- 搜索，答主 -->
     <select id="searchQuestion" resultType="org.echoq.entity.Questions">
         select questionId, anonyIp, question, response, visibility, updtime, crtime from `questions` where question like concat('%', #{searchContent}, '%') or response like concat('%', #{searchContent}, '%') and userId = #{userId}
     </select>
@@ -96,6 +109,18 @@
 
     <select id="searchQuestionUnanswered" resultType="org.echoq.entity.Questions">
         select questionId, anonyIp, question, response, visibility, updtime, crtime from `questions` where (question like concat('%', #{searchContent}, '%') or response like concat('%', #{searchContent}, '%')) and userId = #{userId} and (response is NULL or response = '')
+    </select>
+    <!-- 搜索， 用户 -->
+    <select id="searchQuestionUser" resultType="org.echoq.entity.Questions">
+        select questionId, anonyIp, question, response, visibility, updtime, crtime from `questions` where question like concat('%', #{searchContent}, '%') or response like concat('%', #{searchContent}, '%') and userId = #{userId} and (visibility = 1 or (visibility = 0 and anonyIp = #{ip}))
+    </select>
+
+    <select id="searchQuestionAnsweredUser" resultType="org.echoq.entity.Questions">
+        select questionId, anonyIp, question, response, visibility, updtime, crtime from `questions` where (question like concat('%', #{searchContent}, '%') or response like concat('%', #{searchContent}, '%')) and userId = #{userId} and response is not NULL and response != '' and (visibility = 1 or (visibility = 0 and anonyIp = #{ip}))
+    </select>
+
+    <select id="searchQuestionUnansweredUser" resultType="org.echoq.entity.Questions">
+        select questionId, anonyIp, question, response, visibility, updtime, crtime from `questions` where (question like concat('%', #{searchContent}, '%') or response like concat('%', #{searchContent}, '%')) and userId = #{userId} and (response is NULL or response = '') and (visibility = 1 or (visibility = 0 and anonyIp = #{ip}))
     </select>
 
     <select id="selectQuestionsUnansweredInvIPPublic" resultType="org.echoq.entity.Questions">

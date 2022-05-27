@@ -34,6 +34,10 @@ public interface UserMapper extends BaseMapper<User> {
     List<Questions> searchQuestionAnswered(Integer userId, String searchContent);
     List<Questions> searchQuestionUnanswered(Integer userId, String searchContent);
 
+    List<Questions> searchQuestionUser(Integer userId, String searchContent, String ip);
+    List<Questions> searchQuestionAnsweredUser(Integer userId, String searchContent, String ip);
+    List<Questions> searchQuestionUnansweredUser(Integer userId, String searchContent, String ip);
+
     int selectUser(String username);
     User selectUserInfo(int userId);
     User selectUserDisplayInfo(int userId);
@@ -46,10 +50,14 @@ public interface UserMapper extends BaseMapper<User> {
     List<Questions> selectQuestionsUnansweredInv(int userId);
     List<Questions> selectQuestionsAnsweredInv(int userId);
 
-    List<Questions> selectQuestionsUnansweredInvIPPublic(int userId, int ip);
-    List<Questions> selectQuestionsAnsweredInvIPPublic(int userId, int ip);
-    List<Questions> selectQuestionsUnansweredInvIPPrivate(int userId, int ip);
-    List<Questions> selectQuestionsAnsweredInvIPPrivate(int userId, int ip);
+    List<Questions> selectQuestionsVisIP(int userId, String ip);
+    List<Questions> selectQuestionsUnansweredVisIP(int userId, String ip);
+    List<Questions> selectQuestionsAnsweredVisIP(int userId, String ip);
+
+    List<Questions> selectQuestionsUnansweredInvIPPublic(int userId, String ip);
+    List<Questions> selectQuestionsAnsweredInvIPPublic(int userId, String ip);
+    List<Questions> selectQuestionsUnansweredInvIPPrivate(int userId, String ip);
+    List<Questions> selectQuestionsAnsweredInvIPPrivate(int userId, String ip);
 
     int signin(String username, String password);
 }
