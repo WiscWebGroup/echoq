@@ -18,15 +18,19 @@ const NewContent = () => {
   const { getQuestions, searchQuestion } = useQuestionUpdate()
 
   const [search, setSearch] = useState("")
+  const [isSearching, setIsSearching] = useState(true)
 
   useEffect(() => {
     getQuestions("unanswered")
+    setIsSearching(false)
   }, [])
 
   useDebounce(
     () => {
+      setIsSearching(true)
       if (search !== "") searchQuestion(search, "unanswered")
       if (search === "") getQuestions("unanswered")
+      setIsSearching(false)
     },
     500,
     [search]
@@ -81,7 +85,7 @@ const NewContent = () => {
       }
     })
     if (response.status === 200) {
-      getQuestions("answered")
+      getQuestions("unanswered")
       setAlert({
         status: "success",
         text: "Succesesfully changed the visibility",
@@ -131,13 +135,8 @@ const NewContent = () => {
             setSearch(e.target.value)
           }
         />
-        <Text
-          width="calc(100% - 20px)"
-          fontSize="md"
-          color="gray.400"
-          fontStyle="italic"
-        >
-          {questions.length} results...
+        <Text width="calc(100% - 20px)" color="gray.400" fontStyle="italic">
+          {questions.length} results {isSearching && "(fetching...)"}
         </Text>
         <VStack width="100%" spacing={5} divider={<Divider />}>
           {questions.map(({ order, questionId, question, show, askedAt }) => {
@@ -155,6 +154,16 @@ const NewContent = () => {
               />
             )
           })}
+          {questions.length === 0 && (
+            <>
+              <Text width="calc(100% - 20px)" textAlign="center" color="gray">
+                You don't have any questions yet.
+              </Text>
+              <Text width="calc(100% - 20px)" textAlign="center" color="gray">
+                Copy your share link via the green button below.
+              </Text>
+            </>
+          )}
         </VStack>
       </VStack>
       <div className="echo-content-logo-container">

@@ -21,7 +21,7 @@ import { useNavigate } from "react-router-dom"
 
 import useApiResponse from "../../common/hooks/useApiResponse"
 import useLocalStorage, { TOKEN_KEY } from "../../common/hooks/useLocalStorage"
-import { NormalHeader } from "../../components/Header"
+import { NormalHeader } from "../../components/header/Header"
 import { initialCredentialState, signinReducer } from "./reducers/signinReducer"
 
 import "./signin.css"
@@ -36,7 +36,7 @@ const Signin = () => {
   const [state, dispatch] = useReducer(signinReducer, initialCredentialState)
 
   useEffect(() => {
-    if (get() !== null) navigate("/account")
+    if (get() !== null) navigate("/echo")
   }, [get, navigate])
 
   const handleChangeUsername = (event: ChangeEvent<HTMLInputElement>) => {
@@ -88,7 +88,7 @@ const Signin = () => {
     if (data.t === 1) {
       set(data.token)
       setLoading(false)
-      navigate("/account")
+      navigate("/echo")
     } else {
       setLoading(false)
       onOpen()

@@ -2,14 +2,14 @@ import { IconButton, Image, Text, useClipboard } from "@chakra-ui/react"
 import { AddIcon } from "@chakra-ui/icons"
 import { Link } from "react-router-dom"
 
-import ShareIcon from "./icons/ShareIcon"
-import DotFilled from "../asset/svg/dot-filled.svg"
-import DotUnfilled from "../asset/svg/dot-unfilled.svg"
-import UserFilled from "../asset/svg/user-filled.svg"
-import UserUnfilled from "../asset/svg/user-unfilled.svg"
+import ShareIcon from "../icons/ShareIcon"
+import DotFilled from "../../asset/svg/dot-filled.svg"
+import DotUnfilled from "../../asset/svg/dot-unfilled.svg"
+import UserFilled from "../../asset/svg/user-filled.svg"
+import UserUnfilled from "../../asset/svg/user-unfilled.svg"
+import { useAlertUpdate } from "../alert/AlertProvider"
 
 import "./footer.css"
-import { useAlertUpdate } from "./alert/AlertProvider"
 
 export const AuthedFooter = ({
   active,

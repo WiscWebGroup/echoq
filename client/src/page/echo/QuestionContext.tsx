@@ -1,10 +1,4 @@
-import {
-  createContext,
-  ReactNode,
-  useCallback,
-  useContext,
-  useState
-} from "react"
+import { createContext, ReactNode, useContext, useState } from "react"
 import useApiResponse from "../../common/hooks/useApiResponse"
 import useLocalStorage, { TOKEN_KEY } from "../../common/hooks/useLocalStorage"
 
@@ -57,20 +51,22 @@ const QuestionProvider = ({ children }: { children?: ReactNode }) => {
     })
     if (response.status === 200) {
       const data = (await response.json()).t
-      let questionArray: IQuestion[] = []
-      for (let [index, qdata] of data.entries()) {
-        let q: IQuestion = {
-          order: index + 1,
-          questionId: qdata.questionid,
-          question: qdata.question,
-          response: qdata.response,
-          show: qdata.visibility,
-          askedAt: qdata.crtime,
-          respondedAt: qdata.updtime
+      if (data !== null) {
+        let questionArray: IQuestion[] = []
+        for (let [index, qdata] of data.entries()) {
+          let q: IQuestion = {
+            order: index + 1,
+            questionId: qdata.questionid,
+            question: qdata.question,
+            response: qdata.response,
+            show: qdata.visibility,
+            askedAt: qdata.crtime,
+            respondedAt: qdata.updtime
+          }
+          questionArray = [...questionArray, q]
         }
-        questionArray = [...questionArray, q]
+        setQuestions(questionArray)
       }
-      setQuestions(questionArray)
     }
   }
 
@@ -90,20 +86,22 @@ const QuestionProvider = ({ children }: { children?: ReactNode }) => {
     })
     if (response.status === 200) {
       const data = (await response.json()).t
-      let questionArray: IQuestion[] = []
-      for (let [index, qdata] of data.entries()) {
-        let q: IQuestion = {
-          order: index + 1,
-          questionId: qdata.questionid,
-          question: qdata.question,
-          response: qdata.response,
-          show: qdata.visibility,
-          askedAt: qdata.crtime,
-          respondedAt: qdata.updtime
+      if (data !== null) {
+        let questionArray: IQuestion[] = []
+        for (let [index, qdata] of data.entries()) {
+          let q: IQuestion = {
+            order: index + 1,
+            questionId: qdata.questionid,
+            question: qdata.question,
+            response: qdata.response,
+            show: qdata.visibility,
+            askedAt: qdata.crtime,
+            respondedAt: qdata.updtime
+          }
+          questionArray = [...questionArray, q]
         }
-        questionArray = [...questionArray, q]
+        setQuestions(questionArray)
       }
-      setQuestions(questionArray)
     }
   }
 

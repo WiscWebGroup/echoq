@@ -21,7 +21,7 @@ import { useNavigate } from "react-router-dom"
 
 import useApiResponse from "../../common/hooks/useApiResponse"
 import useLocalStorage, { TOKEN_KEY } from "../../common/hooks/useLocalStorage"
-import { NormalHeader } from "../../components/Header"
+import { NormalHeader } from "../../components/header/Header"
 import { signupReducer, initialFormState } from "./reducers/signupReducer"
 
 import "./signup.css"
@@ -36,7 +36,7 @@ const Signup = () => {
   const [state, dispatch] = useReducer(signupReducer, initialFormState)
 
   useEffect(() => {
-    if (get() !== null) navigate("/account")
+    if (get() !== null) navigate("/echo")
   }, [get, navigate])
 
   const handleChangeName = (event: ChangeEvent<HTMLInputElement>) => {
@@ -135,7 +135,7 @@ const Signup = () => {
     if (data.t === 1) {
       set(data.token)
       setLoading(false)
-      navigate("/account")
+      navigate("/echo")
     } else {
       setLoading(false)
       onOpen()

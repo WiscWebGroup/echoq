@@ -5,17 +5,21 @@ import {
   useEffect,
   useState
 } from "react"
+
 import useApiResponse from "../../common/hooks/useApiResponse"
 import useLocalStorage, { TOKEN_KEY } from "../../common/hooks/useLocalStorage"
+import { base64toBlob } from "../../common/utils/utils"
 
 interface IUser {
+  userId: number
   name: string
   username: string
   whatsup: string | null
-  avatar: string | null
+  avatar: Blob | null
 }
 
 const initialUserState: IUser = {
+  userId: 0,
   name: "",
   username: "",
   whatsup: null,
@@ -44,10 +48,13 @@ const UserProvider = ({ children }: { children?: ReactNode }) => {
     })
     if (response.status === 200) {
       const data = (await response.json()).t
-      setUser({
-        ...data,
-        avatar: data.avataraddr ? URL.createObjectURL(data.avataraddr) : null
-      })
+      if (data !== null) {
+        setUser({
+          ...data,
+          userId: data.userid,
+          avatar: data.avataraddr ? base64toBlob(data.avataraddr) : null
+        })
+      }
     }
   }
 

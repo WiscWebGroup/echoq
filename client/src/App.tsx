@@ -10,6 +10,8 @@ import Echo from "./page/echo/Echo"
 import Share from "./page/share/Share"
 
 import "./app.css"
+import UserNotExist from "./page/error/UserNotExist"
+import PageNotFound from "./page/error/PageNotFound"
 
 export const App = () => {
   return (
@@ -23,7 +25,9 @@ export const App = () => {
               <Route path="/signup" element={<Signup />} />
               <Route path="/account" element={<Account />} />
               <Route path="/echo" element={<Echo />} />
-              <Route path="/share/:id" element={<Share />} />
+              <Route path="/share/:userId" element={<Share />} />
+              <Route path="/error/user" element={<UserNotExist />} />
+              <Route path="*" element={<PageNotFound />} />
             </Routes>
           </Router>
         </ScaleFade>

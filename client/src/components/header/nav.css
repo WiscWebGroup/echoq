@@ -22,6 +22,8 @@
   flex-direction: column;
 }
 
+.home-nav-container,
+.error-nav-container,
 .share-nav-container,
 .auth-nav-container {
   width: calc(100% - 30px);
@@ -32,6 +34,8 @@
   position: relative;
 }
 
+.home-logo-container,
+.error-logo-container,
 .share-logo-container,
 .auth-logo-container {
   position: absolute;
@@ -45,4 +49,9 @@
 .auth-logout-container {
   position: absolute;
   right: 0;
+}
+
+.share-whatsup-container {
+  position: absolute;
+  bottom: -10px;
 }

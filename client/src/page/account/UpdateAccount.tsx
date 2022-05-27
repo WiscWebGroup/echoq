@@ -16,7 +16,7 @@ import {
   useDisclosure,
   VStack
 } from "@chakra-ui/react"
-import { ChangeEvent, useReducer, useRef } from "react"
+import { ChangeEvent, useReducer, useRef, useState } from "react"
 
 import { useUser, useUserUpdate } from "./UserContext"
 import useApiResponse from "../../common/hooks/useApiResponse"
@@ -35,6 +35,7 @@ const UpdateAccount = () => {
   const cancelRef = useRef<HTMLButtonElement>(null)
   const { isOpen, onOpen, onClose } = useDisclosure()
 
+  const [isSaveLoading, setIsSaveLoading] = useState(false)
   const [state, dispatch] = useReducer(accountReducer, initialAccountState)
 
   const handleChangeName = (event: ChangeEvent<HTMLInputElement>) => {
@@ -107,8 +108,10 @@ const UpdateAccount = () => {
   }
 
   const handleSave = async () => {
+    setIsSaveLoading(true)
     if (state.name && !state.isNameEmpty && !state.isNameError) updateName()
     if (state.pass && !state.isPassEmpty && !state.isPassError) updatePassword()
+    setIsSaveLoading(false)
   }
 
   return (
@@ -142,7 +145,12 @@ const UpdateAccount = () => {
                   <Button ref={cancelRef} onClick={handleReset} size="sm">
                     Cancel
                   </Button>
-                  <Button colorScheme="teal" onClick={handleSave} size="sm">
+                  <Button
+                    colorScheme="teal"
+                    onClick={handleSave}
+                    isLoading={isSaveLoading}
+                    size="sm"
+                  >
                     Save
                   </Button>
                 </HStack>
@@ -175,6 +183,7 @@ const UpdateAccount = () => {
               id="name"
               type="text"
               value={state.name}
+              placeholder={user.name}
               onChange={handleChangeName}
             />
             <FormHelperText fontSize="xs">
