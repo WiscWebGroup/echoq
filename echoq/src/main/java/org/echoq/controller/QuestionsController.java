@@ -29,10 +29,9 @@ public class QuestionsController {
     @Resource
     IUserService userService;
 
-    @PostMapping("/ask/{name}")
-    public Result<Integer> askQuestion(@PathVariable() String name, String question, String ip)
+    @PostMapping("/ask/{id}")
+    public Result<Integer> askQuestion(@PathVariable() Integer id, String question, String ip)
     {
-        int id = userService.selectUser(name);
         int res = service.insertQuestion(ip, question, id);
         if (res == 1)
             return new Result<>(1, 200);

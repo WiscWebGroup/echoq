@@ -13,11 +13,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -48,7 +48,7 @@ public class UserController {
         if (response == 1) {
             String uuid = UUID.randomUUID().toString();
             int id = service.selectUser(username);
-            template.opsForValue().set(uuid,id);
+            template.opsForValue().set(uuid,id,1, TimeUnit.DAYS);
             // session.setAttribute(uuid, id);
             return new ResultToken<>(1, 200, uuid);
         }
@@ -62,10 +62,10 @@ public class UserController {
         String username = user.getUsername();
         String password = user.getPassword();
         int c = service.signin(username, password);
-        int userId = service.selectUser(username);
         if (c == 1) {
+            int userId = service.selectUser(username);
             String uuid = UUID.randomUUID().toString();
-            template.opsForValue().set(uuid,userId);
+            template.opsForValue().set(uuid,userId,1, TimeUnit.DAYS);
             // session.setAttribute(uuid, userId);
             return new ResultToken<>(1, 200, uuid);
         }else
@@ -84,7 +84,11 @@ public class UserController {
     public Result<User> getInfo(HttpServletRequest request)
     {
         String key = request.getHeader("XXX-SToken");
+        if(key == null || key.equals(""))
+            return new Result<>(null, 401);
         Integer id = (Integer) template.opsForValue().get(key);
+        if (id == null)
+            return new Result<>(null, 401);
         User user = service.selectUserInfo(id);
         if (user.getUsername().equals("") || user.getUsername() == null)
         {
@@ -95,19 +99,69 @@ public class UserController {
         }
     }
 
-    @PostMapping("/updateInfo")
-    public Result<Integer> update(@RequestBody User user, HttpServletRequest request)
+    @PostMapping("/updateInfoName")
+    public Result<Integer> updateName(@RequestBody User user, HttpServletRequest request)
     {
         String key = request.getHeader("XXX-SToken");
+        if(key == null || key.equals(""))
+            return new Result<>(null, 401);
         Integer id = (Integer) template.opsForValue().get(key);
+        if (id == null)
+            return new Result<>(null, 401);
         user.setUserid(id);
-        /*User usr = new User();
-        usr.setUserid(id);
-        usr.setName(name);
-        usr.setPassword(password);
-        usr.setWhatsup(whatsup);
-        usr.setColor(color);*/
-        int res = service.updateUserInfo(user);
+        int res = service.updateUserName(user);
+        if (res == 1)
+            return new Result<>(1, 200);
+        else
+            return new Result<>(-1, 400);
+    }
+
+    @PostMapping("/updateInfoPassword")
+    public Result<Integer> updatePassword(@RequestBody User user, HttpServletRequest request)
+    {
+        String key = request.getHeader("XXX-SToken");
+        if(key == null || key.equals(""))
+            return new Result<>(null, 401);
+        Integer id = (Integer) template.opsForValue().get(key);
+        if (id == null)
+            return new Result<>(null, 401);
+        user.setUserid(id);
+        int res = service.updateUserPassword(user);
+        if (res == 1)
+            return new Result<>(1, 200);
+        else
+            return new Result<>(-1, 400);
+    }
+
+    @PostMapping("/updateInfoAvatar")
+    public Result<Integer> updateAvatar(MultipartFile img, HttpServletRequest request) throws IOException {
+        String key = request.getHeader("XXX-SToken");
+        if(key == null || key.equals(""))
+            return new Result<>(null, 401);
+        Integer id = (Integer) template.opsForValue().get(key);
+        if (id == null)
+            return new Result<>(null, 401);
+        File file = null;
+        file = File.createTempFile("img", "jpg");    //注意下面的 特别注意！！！
+        img.transferTo(file);
+        int res = service.updateAvatar(file, id);
+        file.deleteOnExit();
+        if (res == 1)
+            return new Result<>(1, 200);
+        else
+            return new Result<>(-1, 400);
+    }
+
+    @PostMapping("/updateInfoWhatsup")
+    public Result<Integer> updateWhatsup(@RequestBody User user, HttpServletRequest request) {
+        String key = request.getHeader("XXX-SToken");
+        if(key == null || key.equals(""))
+            return new Result<>(null, 401);
+        Integer id = (Integer) template.opsForValue().get(key);
+        if (id == null)
+            return new Result<>(null, 401);
+        user.setUserid(id);
+        int res = service.updateUserWhatsup(user);
         if (res == 1)
             return new Result<>(1, 200);
         else
@@ -118,44 +172,44 @@ public class UserController {
     public Result<List<Questions>> selectQuestions(String condition, HttpServletRequest request)
     {
         String key = request.getHeader("XXX-SToken");
+        if(key == null || key.equals(""))
+            return new Result<>(null, 401);
         Integer id = (Integer) template.opsForValue().get(key);
+        if (id == null)
+            return new Result<>(null, 401);
         List<Questions> questions = service.selectQuestionConditional(id, condition);
         return new Result<>(questions, 200);
     }
 
-    @GetMapping("/getQ/{username}")
-    public Result<List<Questions>> selectQuestionsVisible(@PathVariable String username, String condition)
+    @GetMapping("/getQ/{id}")
+    public Result<List<Questions>> selectQuestionsVisible(@PathVariable Integer id, String condition, String ip)
     {
-        List<Questions> questions = service.selectQuestionConditionalInvisible(username, condition);
+        List<Questions> questions = service.selectQuestionConditionalInvisible(id, condition, ip);
         return new Result<>(questions, 200);
     }
 
-
-    @PostMapping("updateAvatar")
-    public Result<Integer> updateAvatar(MultipartFile img, HttpServletRequest request) throws IOException {
-        String key = request.getHeader("XXX-SToken");
-        Integer id = (Integer) template.opsForValue().get(key);
-        File file = new File("src/main/resources/targetFile.tmp");
-        img.transferTo(file);
-        int res = service.updateAvatar(file, id);
-        if (res == 1)
-            return new Result<>(1, 200);
-        else
-            return new Result<>(-1, 400);
+    @GetMapping("/userDisplayInfo")
+    public Result<User> selectUserDisplayInfo(Integer userId)
+    {
+        return new Result<>(service.selectUserDisplayInfo(userId), 200);
     }
 
-    @PostMapping("respondQuestion")
-    public Result<Integer> respondQuestion(int questionId, String response, boolean visibility, HttpServletRequest request)
+    @PostMapping("/respondQuestion")
+    public Result<Integer> respondQuestion(@RequestBody QuestionVO questionVO, HttpServletRequest request)
     {
         String key = request.getHeader("XXX-SToken");
+        if(key == null || key.equals(""))
+            return new Result<>(null, 401);
         Integer id = (Integer) template.opsForValue().get(key);
-        int confId = service.confirmQuestionBelonging(questionId);
+        if (id == null)
+            return new Result<>(null, 401);
+        int confId = service.confirmQuestionBelonging(questionVO.questionid);
         if (id == confId)
         {
             Questions q = new Questions();
-            q.setQuestionid(questionId);
-            q.setResponse(response);
-            q.setVisibility(visibility);
+            q.setQuestionid(questionVO.questionid);
+            q.setResponse(questionVO.response);
+            q.setVisibility(questionVO.visibility);
             int res = service.respondQuestion(q);
             if (res == 1)
                 return new Result<>(1, 200);
@@ -171,7 +225,11 @@ public class UserController {
     public Result<Integer> updateVisibility(int questionId, boolean visibility, HttpServletRequest request)
     {
         String key = request.getHeader("XXX-SToken");
+        if(key == null || key.equals(""))
+            return new Result<>(null, 401);
         Integer id = (Integer) template.opsForValue().get(key);
+        if (id == null)
+            return new Result<>(null, 401);
         int confId = service.confirmQuestionBelonging(questionId);
         if (id == confId)
         {
@@ -188,7 +246,11 @@ public class UserController {
     public Result<Integer> deleteUser(HttpServletRequest request)
     {
         String key = request.getHeader("XXX-SToken");
+        if(key == null || key.equals(""))
+            return new Result<>(null, 401);
         Integer id = (Integer) template.opsForValue().get(key);
+        if (id == null)
+            return new Result<>(null, 401);
         int res = service.deleteUser(id);
         if (res == 1)
             return new Result<>(1, 200);
@@ -200,7 +262,11 @@ public class UserController {
     public Result<Integer> deleteQuestion(int questionId, HttpServletRequest request)
     {
         String key = request.getHeader("XXX-SToken");
+        if(key == null || key.equals(""))
+            return new Result<>(null, 401);
         Integer id = (Integer) template.opsForValue().get(key);
+        if (id == null)
+            return new Result<>(null, 401);
         int confId = service.confirmQuestionBelonging(questionId);
         if (id == confId)
         {
@@ -217,7 +283,11 @@ public class UserController {
     public Result<Integer> deleteQuestions(int[] questionId, HttpServletRequest request)
     {
         String key = request.getHeader("XXX-SToken");
+        if(key == null || key.equals(""))
+            return new Result<>(null, 401);
         Integer id = (Integer) template.opsForValue().get(key);
+        if (id == null)
+            return new Result<>(null, 401);
         int confId = service.confirmQuestionBelonging(questionId[0]);
         if (id == confId)
         {
@@ -237,10 +307,57 @@ public class UserController {
     }
 
     @GetMapping("/searchQuestion")
-    public Result<List<Questions>> searchQuestion(String searchContent, HttpServletRequest request) {
+    public Result<List<Questions>> searchQuestion(String searchContent, String condition, HttpServletRequest request) {
         String key = request.getHeader("XXX-SToken");
+        if(key == null || key.equals(""))
+            return new Result<>(null, 401);
         Integer id = (Integer) template.opsForValue().get(key);
-        return new Result<>(service.searchQuestion(id, searchContent), 200);
+        if (id == null)
+            return new Result<>(null, 401);
+        return new Result<>(service.searchQuestion(id, searchContent, condition), 200);
     }
+
+    @GetMapping("/searchQuestionUser")
+    public Result<List<Questions>> searchQuestionUser(Integer id, String searchContent, String condition, String ip) {
+        if (id == null)
+            return new Result<>(null, 401);
+        return new Result<>(service.searchQuestionUser(id, searchContent, condition, ip), 200);
+    }
+
+    @GetMapping("/selectQuestionsInvIP")
+    public Result<List<Questions>> selectQuestionsInvIP(Integer userId, String ip, Boolean visibility, Boolean answered)
+    {
+        return new Result<>(service.selectQuestionsInvIP(userId, ip, visibility, answered), 200);
+    }
+
+private static class QuestionVO {
+    Integer questionid;
+    String response;
+    boolean visibility;
+
+    public boolean isVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(boolean visibility) {
+        this.visibility = visibility;
+    }
+
+    public Integer getQuestionid() {
+        return questionid;
+    }
+
+    public void setQuestionid(Integer questionid) {
+        this.questionid = questionid;
+    }
+
+    public String getResponse() {
+        return response;
+    }
+
+    public void setResponse(String response) {
+        this.response = response;
+    }
+}
 }
 
