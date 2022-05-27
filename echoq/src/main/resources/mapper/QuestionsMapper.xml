@@ -8,7 +8,7 @@
     <insert id="insertQuestion" parameterType="org.echoq.entity.Questions">
         insert into `questions`(anonyIp, question, userId, visibility, crtime, updtime)
         values
-            (#{anonyip}, #{question}, #{userid}, FALSE, NOW(), NOW())
+            (#{anonyip}, #{question}, #{userid}, TRUE, NOW(), NOW())
     </insert>
 
 </mapper>
