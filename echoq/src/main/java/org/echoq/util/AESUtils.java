@@ -153,12 +153,12 @@ public class AESUtils {
     public static void main(String[] args) throws Exception {
         //明文
         // String content = HaroldFile.readFile("resource.txt");
-        String content = "***REMOVED***";
+        String content = "";
         //密匙
         String pkey2 = "ifyoucanhearthisvoice,youarealon";
 
         // Encrypted
-        String encryptedText = "***REMOVED***==";
+        String encryptedText = "";
         System.out.println(aesDecodeStr(encryptedText, pkey2));
 
         /*System.out.println("待加密报文:" + content);
